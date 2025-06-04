@@ -1,4 +1,5 @@
-import Link from "next/link";
+"use client";
+
 import { Page } from "~/components/page";
 import { PoolList } from "~/components/pool/pool-list";
 
@@ -10,8 +11,4 @@ export default function PoolsPage() {
       </div>
     </Page>
   );
-}
-
-function PoolCardSkeleton() {
-  return <div className="aspect-video rounded-xl bg-muted/50 hover:bg-muted" />;
 }

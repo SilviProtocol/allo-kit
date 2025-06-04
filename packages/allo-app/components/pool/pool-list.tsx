@@ -18,7 +18,7 @@ export function PoolList({ query }: { query: IndexerQuery }) {
       renderItem={(pool) => {
         return (
           <Link href={`/app/pools/${pool?.address}`} prefetch>
-            <PoolCard {...pool} key={pool.address ?? pool.id} />
+            <PoolCard {...pool} key={pool.address} />
           </Link>
         );
       }}

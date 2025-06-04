@@ -1,5 +1,4 @@
 import { PropsWithChildren, ReactNode } from "react";
-import { BackButton } from "./back-button";
 
 export function Page({
   actions,

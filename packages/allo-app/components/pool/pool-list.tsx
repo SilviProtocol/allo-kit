@@ -2,16 +2,22 @@
 
 import Link from "next/link";
 import { IndexerQuery } from "~/hooks/use-indexer";
-import { Grid } from "../grid";
+import { Columns, Grid } from "../grid";
 import { usePools } from "./use-pool";
 import { PoolCard } from "./pool-card";
 
-export function PoolList({ query }: { query: IndexerQuery }) {
+export function PoolList({
+  columns = [1, 2, 2, 3],
+  query,
+}: {
+  columns?: Columns;
+  query: IndexerQuery;
+}) {
   const { data, error, isPending } = usePools(query);
 
   return (
     <Grid
-      columns={[1, 2, 2, 3]}
+      columns={columns}
       data={data?.items}
       error={error}
       isPending={isPending}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { Coins, Rocket } from "lucide-react";
+import { PoolList } from "~/components/pool/pool-list";
 
 export default function Home() {
   return (
@@ -41,19 +42,9 @@ export default function Home() {
           <h1 className="text-2xl font-bold text-center mb-2">
             Featured Pools
           </h1>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {Array.from({ length: 9 }).map((_, index) => (
-              <Link href="/app/pools/1" key={index}>
-                <PoolCardSkeleton key={index} />
-              </Link>
-            ))}
-          </div>
+          <PoolList query={{}} columns={[1, 2, 3, 4]} />
         </div>
       </div>
     </main>
   );
-}
-
-function PoolCardSkeleton() {
-  return <div className="aspect-video rounded-xl bg-muted/50 hover:bg-muted" />;
 }

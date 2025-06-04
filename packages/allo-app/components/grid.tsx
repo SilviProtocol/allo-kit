@@ -4,7 +4,7 @@ import { EmptyState, EmptyStateProps } from "./empty-state";
 import { ErrorMessageLog } from "./error-message";
 
 type ColumnValue = 0 | 1 | 2 | 3 | 4;
-type Columns = [ColumnValue?, ColumnValue?, ColumnValue?, ColumnValue?];
+export type Columns = [ColumnValue?, ColumnValue?, ColumnValue?, ColumnValue?];
 
 export type GridProps<T> = {
   columns?: Columns;

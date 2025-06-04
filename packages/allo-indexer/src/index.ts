@@ -4,8 +4,6 @@ import { Address, erc20Abi, Hex, zeroAddress, getAddress } from "viem";
 import pRetry from "p-retry";
 import { cachedFetchWithRetry } from "./lib/fetch";
 
-import { decodeData } from "@se-2/sdk/utils";
-
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 const PINATA_GATEWAY_URL = process.env.PINATA_GATEWAY_URL;
 const PINATA_GATEWAY_KEY = process.env.PINATA_GATEWAY_KEY;

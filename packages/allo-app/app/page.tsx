@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { Coins, Rocket } from "lucide-react";
-import { PoolFilter } from "./dashboard/[poolAddress]/pools/_components/pool-filter";
 
 export default function Home() {
   return (

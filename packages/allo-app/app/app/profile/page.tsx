@@ -13,7 +13,7 @@ export default function ProfilePage() {
       description="Your applications and allocations are shown here."
     >
       <h3 className="pt-4 pb-2 text-lg font-semibold">Applications</h3>
-      <RegistrationsList
+      {/* <RegistrationsList
         query={{
           where: {
             owner_in: [address!],
@@ -27,7 +27,7 @@ export default function ProfilePage() {
             from_in: [address!],
           },
         }}
-      />
+      /> */}
     </Page>
   );
 }

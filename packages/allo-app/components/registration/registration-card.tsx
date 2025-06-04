@@ -12,6 +12,7 @@ import { EnsName } from "../ens";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ApprovedBadge } from "./approved-badge";
 import { NetworkBadge } from "../network-badge";
+import { stripMarkdown } from "~/lib/strip-markdown";
 
 export function RegistrationCard({
   inCart,
@@ -28,7 +29,7 @@ export function RegistrationCard({
   return (
     <Card
       className={cn(
-        "pt-0 shadow-none aspect-video hover:opacity-90 transition-opacity relative",
+        "pt-0 shadow-none aspect-video hover:opacity-90 transition-opacity relative gap-3",
         {
           ["animate-pulse"]: isLoading,
         }
@@ -36,7 +37,7 @@ export function RegistrationCard({
     >
       <div className="absolute flex gap-1 items-center top-2 left-2">
         {/* <ApprovedBadge isApproved={project?.isApproved} /> */}
-        <NetworkBadge chainId={project?.chainId} />
+        {/* <NetworkBadge chainId={project?.chainId} /> */}
       </div>
       <Button
         className="rounded-full absolute top-2 right-2"
@@ -57,9 +58,13 @@ export function RegistrationCard({
       />
 
       <CardHeader className="flex justify-between items-center">
-        <CardTitle className="text-xl">{project?.metadata?.title}</CardTitle>
-        <div className="flex gap-1 items-center"></div>
+        <CardTitle className="text-lg">{project?.metadata?.title}</CardTitle>
       </CardHeader>
+      <CardContent>
+        <p className="line-clamp-3 text-sm">
+          {stripMarkdown(project?.metadata?.description ?? "", 140)}
+        </p>
+      </CardContent>
     </Card>
   );
   return (

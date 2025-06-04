@@ -9,7 +9,6 @@ import { chains } from "~/config";
 
 export type RegistrationWhere = {
   id?: Hex;
-  index?: number;
   address_in?: Address[];
   strategy_in?: Address[];
   isApproved?: boolean;

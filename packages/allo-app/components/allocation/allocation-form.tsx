@@ -90,7 +90,7 @@ export function AllocationForm() {
         // if (!token.data) throw new Error("Token not found");
 
         const parseRegistrationId = (id: string) => {
-          const [address, pool, index] = id.split("_");
+          const [address, pool] = id.split("_");
           return { address, pool };
         };
         // const allocations = Object.entries(cart.items).reduce(

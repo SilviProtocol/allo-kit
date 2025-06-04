@@ -164,9 +164,9 @@ ponder.on("Pool:Allocate", async ({ event, context }) => {
   });
 });
 
-// Registration IDs are a composite of project address, pool, applicationIndex, and chainId
+// Registration IDs are a composite of project address, pool, and chainId
 const registrationId = (event: Event, chainId: number) =>
-  `${event.args.project}_${event.log.address}_${event.args.index}_${chainId}` as Hex;
+  `${event.args.project}_${event.log.address}_${chainId}` as Hex;
 
 async function fetchMetadata(cid: string) {
   console.log("Fetching metadata for:", cid);

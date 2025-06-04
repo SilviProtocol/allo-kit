@@ -9,23 +9,23 @@ import { NavLink } from "~/components/nav-link";
 import { Input } from "~/components/ui/input";
 
 export function Header() {
-  // const params = useParams();
+  const params = useParams();
 
-  // console.log(params);
-  // const poolAddress = params.poolAddress as string;
+  console.log(params);
+  const poolAddress = params.poolAddress as string;
   return (
     <div className="border-b">
       <header className="max-w-screen-xl mx-auto flex items-center p-2">
         <Logo href="/" />
         <div className="ml-16 flex items-center flex-1">
-          {/* {poolAddress ? (
+          {poolAddress ? (
             <>
               <NavLink href={`/app/pools/${poolAddress}`}>Projects</NavLink>
               <NavLink href={`/app/pools/${poolAddress}/checkout`}>
                 Checkout
               </NavLink>
             </>
-          ) : null} */}
+          ) : null}
           {/* <NavLink href="/app/strategies">Strategies</NavLink> */}
         </div>
         <div className="flex items-center gap-1 ">

@@ -8,34 +8,31 @@ import { useRegistrations } from "./use-register";
 import Link from "next/link";
 
 export function RegistrationsList({ query }: { query: IndexerQuery }) {
-  return null;
-  // const cart = useCart();
-  // const { data, error, isPending } = useRegistrations(query);
+  const cart = useCart();
+  const { data, error, isPending } = useRegistrations(query);
 
-  // console.log(data?.items);
-
-  // return (
-  //   <Grid
-  //     columns={[1, 2, 3, 4]}
-  //     data={data?.items}
-  //     error={error}
-  //     isPending={isPending}
-  //     renderItem={(project) => (
-  //       <Link
-  //         href={`/app/pools/${project.pool?.address}/registrations/${project.address}`}
-  //       >
-  //         <RegistrationCard
-  //           {...project}
-  //           key={project.id}
-  //           inCart={cart.contains(project.id)}
-  //           onSelect={() =>
-  //             cart.contains(project.id)
-  //               ? cart.remove(project.id)
-  //               : cart.set(project.id, 1)
-  //           }
-  //         />
-  //       </Link>
-  //     )}
-  //   />
-  // );
+  return (
+    <Grid
+      columns={[1, 2, 3, 4]}
+      data={data?.items}
+      error={error}
+      isPending={isPending}
+      renderItem={(project) => (
+        <Link
+          href={`/app/pools/${project.pool?.address}/registrations/${project.address}`}
+        >
+          <RegistrationCard
+            {...project}
+            key={project.id}
+            inCart={cart.contains(project.id)}
+            onSelect={() =>
+              cart.contains(project.id)
+                ? cart.remove(project.id)
+                : cart.set(project.id, 1)
+            }
+          />
+        </Link>
+      )}
+    />
+  );
 }

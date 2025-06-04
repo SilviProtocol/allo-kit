@@ -38,22 +38,21 @@ export function useCart() {
   );
   // Persist cart state to localStorage whenever it changes
   useEffect(() => {
-    // localStorage.setItem("cart", JSON.stringify(items));
+    localStorage.setItem("cart", JSON.stringify(items));
   }, [items]);
 
   return { items, contains, set, reset, sum, list, remove };
 }
 
 // Registration IDs are a composite of project address, pool, applicationIndex, and chainId
-const registrationId = ({ address, pool, index, chainId }: Registration) =>
-  `${getAddress(address)}_${getAddress(pool.address)}_${index}_${chainId}`;
+const registrationId = ({ address, pool, chainId }: Registration) =>
+  `${getAddress(address)}_${getAddress(pool.address)}_${chainId}`;
 
 const parseRegistrationId = (id: string) => {
-  const [address, pool, index, chainId] = id.split("_");
+  const [address, pool, chainId] = id.split("_");
   return {
     address: address as Address,
     pool: pool as Address,
-    index: Number(index),
     chainId: Number(chainId),
   };
 };

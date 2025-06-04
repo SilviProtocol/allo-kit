@@ -73,6 +73,7 @@ export function AllocationFormMatching({
   );
 
   console.log(estimated);
+  console.log(cart);
   return (
     <form
       className="space-y-2"

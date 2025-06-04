@@ -54,7 +54,7 @@ export default function PoolDetailsPage() {
       }
     >
       <div className="flex gap-2 items-center mb-2">
-        <Badge>{pool?.strategy.name}</Badge>
+        {pool?.strategy.name ? <Badge>{pool?.strategy.name}</Badge> : null}
         <NetworkBadge chainId={pool?.chainId} />
       </div>
       <BackgroundImage

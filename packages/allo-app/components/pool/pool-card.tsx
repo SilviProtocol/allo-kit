@@ -59,7 +59,9 @@ export function PoolCard({
         </div> */}
       </CardHeader>
       <CardContent>
-        <p>{pool?.metadata?.description}</p>
+        <p className="line-clamp-3">
+          {stripMarkdown(pool?.metadata?.description ?? "", 140)}
+        </p>
         <Separator className="my-4" />
         <div className="flex gap-2 items-end">
           <div className="text-lg font-bold">
@@ -70,4 +72,22 @@ export function PoolCard({
       </CardContent>
     </Card>
   );
+}
+
+function stripMarkdown(markdown: string, maxLength?: number): string {
+  // Regex patterns to match different Markdown syntax
+  const headerRegex = /^#{1,6}\s+/gm; // Matches headers starting with #
+  const otherMarkdownRegex =
+    /(\*\*|__|[*_~`]|!?\[.*?\]\(.*?\)|<.*?>|`{3}[\s\S]*?`{3}|`{1}[\s\S]*?`{1}|[-+*]\s+|>\s+|\d+\.\s+|\n|\r|\t)/g;
+
+  // Replace headers and other markdown patterns with an empty string
+  let plainText = markdown?.replace(headerRegex, "");
+  plainText = plainText?.replace(otherMarkdownRegex, "").trim();
+
+  // If maxLength is provided, slice the text to the desired length
+  if (maxLength !== undefined && maxLength > 0) {
+    plainText = plainText?.slice(0, maxLength);
+  }
+
+  return plainText ?? "";
 }

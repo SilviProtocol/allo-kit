@@ -39,7 +39,7 @@ export function useCart() {
   );
   // Persist cart state to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(items));
+    // localStorage.setItem("cart", JSON.stringify(items));
   }, [items]);
 
   return { items, contains, set, reset, sum, list, remove };

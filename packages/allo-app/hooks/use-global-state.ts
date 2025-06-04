@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 
 // A helper type for actions that can be either a new state

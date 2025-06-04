@@ -3,8 +3,7 @@ import { chains, defaultChain } from "~/config";
 import { createGlobalState } from "./use-global-state";
 
 const useNetworkState = createGlobalState<string>(
-  defaultChain
-  // global.localStorage?.getItem("network") ?? defaultChain
+  global.localStorage?.getItem("network") ?? (defaultChain || defaultChain)
 );
 
 export function useCurrentChainName() {
@@ -16,7 +15,7 @@ export function useSetNetwork() {
   const [, set] = useNetworkState();
   return (network: string) => {
     set(network);
-    // global.localStorage?.setItem("network", network);
+    global.localStorage?.setItem("network", network);
   };
 }
 

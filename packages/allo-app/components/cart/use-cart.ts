@@ -6,8 +6,7 @@ import { Registration } from "~/schemas";
 
 type CartItem = Record<string, bigint | undefined>;
 const useCartState = createGlobalState<CartItem>(
-  {}
-  // JSON.parse(global.localStorage?.getItem("cart") ?? "{}")
+  JSON.parse(global.localStorage?.getItem("cart") ?? "{}")
 );
 
 export function useCart() {

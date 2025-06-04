@@ -5628,6 +5628,7 @@ __metadata:
     react-number-format: ^5.4.4
     react-use: ^17.6.0
     recharts: ^2.15.3
+    remark-gfm: ^4.0.1
     sonner: ^2.0.3
     tailwind-merge: ^3.3.0
     tailwindcss: ^4
@@ -20936,7 +20937,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remark-gfm@npm:^4.0.0":
+"remark-gfm@npm:^4.0.0, remark-gfm@npm:^4.0.1":
   version: 4.0.1
   resolution: "remark-gfm@npm:4.0.1"
   dependencies:

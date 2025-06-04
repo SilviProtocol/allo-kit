@@ -6,12 +6,16 @@ import { Page } from "~/components/page";
 import { useContracts } from "~/hooks/use-contracts";
 import { AllocationsTable } from "~/components/allocation/allocations-table";
 import { QuadraticDistribution } from "~/components/distribution/distribution-quadratic";
+import { usePoolById } from "~/components/pool/use-pool";
+import { useParams } from "next/navigation";
+import { Address } from "viem";
 
 export default function DistributePage() {
-  const { SimpleGrants, ERC20Mock } = useContracts();
   const { address } = useAccount();
-  const strategyAddress = SimpleGrants?.address;
-  const tokenAddress = ERC20Mock?.address;
+  const params = useParams();
+  const { data: pool } = usePoolById(params.poolAddress as Address);
+  const poolAddress = pool?.address as Address;
+  const tokenAddress = pool?.allocationToken as Address;
 
   return (
     <Page title="Matching Funds">
@@ -20,7 +24,7 @@ export default function DistributePage() {
         voting.
       </p>
       <QuadraticDistribution
-        strategyAddress={strategyAddress}
+        poolAddress={poolAddress}
         tokenAddress={tokenAddress}
       />
 
@@ -29,10 +33,10 @@ export default function DistributePage() {
         query={{
           where: {
             // Only fetch allocations for this strategy
-            strategy_in: [strategyAddress],
+            strategy_in: [poolAddress],
             // Not any transfers to or from this contract (fund / withdraw)
             to_not_in: [address!],
-            from_in: [strategyAddress],
+            from_in: [poolAddress],
           },
           orderBy: "createdAt",
           orderDirection: "desc",

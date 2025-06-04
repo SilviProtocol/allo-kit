@@ -1,6 +1,6 @@
 "use client";
 import { ShoppingCart, XIcon } from "lucide-react";
-import { Address } from "viem";
+import { Address, getAddress, Hex } from "viem";
 import { useAccount } from "wagmi";
 
 import { Button } from "~/components/ui/button";
@@ -9,36 +9,44 @@ import {
   useAllocate,
   useAllocations,
 } from "~/components/allocation/use-allocate";
-import { buildAllocations, useCart } from "~/components/cart/use-cart";
+import {
+  buildAllocations,
+  cartItemsToIds,
+  useCart,
+  usePruneCart,
+} from "~/components/cart/use-cart";
 import { AllowanceCheck } from "../token/allowance-check";
 import { formatNumber } from "~/lib/format";
 import { useToken } from "~/components/token/use-token";
-import { useProjects } from "../registration/use-register";
 import { Grid } from "../grid";
 import { AllocationItem } from "./allocation-item";
 import { formatTokenAmount, TokenAmount } from "../token/token-amount";
 import { calculateQuadraticMatching } from "~/lib/quadratic";
-import { Allocation } from "~/schemas";
+import { Allocation, Registration } from "~/schemas";
 import { NumberInput } from "../number-input";
 import { useQuadraticMatching } from "~/hooks/use-quadratic-matching";
 import { useEffect } from "react";
+import { useRegistrations } from "../registration/use-register";
 
 export function AllocationFormMatching({
-  strategyAddress,
+  poolAddress,
   tokenAddress,
 }: {
-  strategyAddress: Address;
+  poolAddress: Address;
   tokenAddress: Address;
 }) {
   const { address } = useAccount();
   const token = useToken(tokenAddress, address);
   const cart = useCart();
-  const allocate = useAllocate({ strategyAddress });
-  const projects = useProjects({
-    where: {
-      address_in: Object.keys(cart.items) as Address[],
-    },
+  const allocate = useAllocate(poolAddress);
+
+  const { pools, ids, chainIds } = cartItemsToIds(cart.items);
+  const projects = useRegistrations({
+    where: { pool_in: pools, address_in: ids, chainId_in: chainIds },
   });
+
+  // Remove projects that doesn't exist from cart
+  usePruneCart(projects.data?.items);
 
   const {
     matching,
@@ -47,50 +55,24 @@ export function AllocationFormMatching({
     isLoading,
     queryKeys,
   } = useQuadraticMatching({
-    strategyAddress,
+    poolAddress,
     tokenAddress,
   });
-  useEffect(() => {
-    if (!projects.data?.items) return;
-    // Make sure the cart items are in the projects
-    const missing =
-      Object.keys(cart.items).filter(
-        (item) => !projects.data?.items.some((p) => p.address === item)
-      ) ?? [];
 
-    missing.forEach(cart.remove);
-  }, [projects.data?.items]);
-  // Get all donations to projects
-  // const allocations = useAllocations({
-  //   where: {
-  //     // Only fetch allocations for this strategy
-  //     strategy_in: [strategyAddress],
-  //     // Not any transfers to or from Strategy contract (fund / withdraw of matching)
-  //     to_not_in: [strategyAddress],
-  //     from_not_in: [strategyAddress],
-  //   },
-  // });
-  // const donations = allocations.data?.items ?? [];
-
-  // const matchingToken = useToken(tokenAddress, strategyAddress);
-  // const matchingFunds = matchingToken.data?.balance ?? BigInt(0);
-
-  // const existing = calculateQuadraticMatching(donations, matchingFunds);
-  // const combined = [
-  //   ...donations,
-  //   ...(Object.entries(cart.items).map(([address, amount]) => ({
-  //     amount: (amount ?? 0) * 10 ** (token.data?.decimals ?? 18),
-  //     to: address,
-  //     from: strategyAddress,
-  //     tokenAddress,
-  //     createdAt: Date.now(),
-  //   })) as unknown as Allocation[]),
-  // ];
-  // const current = calculateQuadraticMatching(combined, matchingFunds);
-
-  // console.log(current);
   const error = projects.error || allocate.error;
 
+  console.log(cart.items, cart);
+
+  const estimated = estimateMatching(
+    Object.entries(cart.items).map(([id, amount]) => ({
+      amount: BigInt(amount ?? 0) * 10n ** BigInt(token.data?.decimals ?? 18),
+      to: id,
+      from: poolAddress,
+      token: tokenAddress,
+    }))
+  );
+
+  console.log(estimated);
   return (
     <form
       className="space-y-2"
@@ -100,7 +82,6 @@ export function AllocationFormMatching({
           cart.items,
           token.data?.decimals
         );
-
         allocate
           .mutateAsync([
             recipients,
@@ -123,22 +104,13 @@ export function AllocationFormMatching({
           icon: ShoppingCart,
         }}
         renderItem={(project, i) => {
-          const estimated = estimateMatching([
-            {
-              amount:
-                (cart.items[project?.address as Address] ?? 0) *
-                10 ** (token.data?.decimals ?? 18),
-              to: project?.address,
-              from: strategyAddress,
-            } as Allocation,
-          ]);
-          const amount = estimated[project?.address as Address];
+          const amount = estimated[project?.id as Address];
           return (
             <AllocationItem
               {...project}
               key={project?.id}
               actions={
-                <>
+                <div className="sm:flex items-center gap-2">
                   {amount ? (
                     <div className="p-2 text-sm">
                       Matching:{" "}
@@ -151,9 +123,9 @@ export function AllocationFormMatching({
                     placeholder="0"
                     allowNegative={false}
                     step={0.0000000001}
-                    value={cart.items[project?.address as Address]}
+                    value={cart.items[project?.id as Address]}
                     onValueChange={({ floatValue }) =>
-                      cart.set(project.address, floatValue)
+                      cart.set(project.id, floatValue)
                     }
                   />
                   <Button
@@ -163,15 +135,15 @@ export function AllocationFormMatching({
                     icon={XIcon}
                     variant={"ghost"}
                     type="button"
-                    onClick={() => cart.remove(project.address)}
+                    onClick={() => cart.remove(project.id)}
                   />
-                </>
+                </div>
               }
             />
           );
         }}
       />
-      <div className="py-4 mt-2 mb-4 border-y sm:flex items-center justify-between">
+      <div className="py-4 mt-2 mb-4 sm:flex items-center justify-between">
         <div className="flex justify-end flex-1 mr-4 gap-1">
           Total: {formatNumber(Number(cart.sum))} /
           <strong>
@@ -185,7 +157,7 @@ export function AllocationFormMatching({
           <AllowanceCheck
             amount={cart.sum}
             tokenAddress={tokenAddress}
-            spenderAddress={strategyAddress}
+            spenderAddress={poolAddress}
           >
             <Button
               className="w-48"

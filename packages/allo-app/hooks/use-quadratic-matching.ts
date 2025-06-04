@@ -6,23 +6,23 @@ import { calculateQuadraticMatching } from "~/lib/quadratic";
 import { Allocation } from "~/schemas";
 
 type UseQuadraticMatchingProps = {
-  strategyAddress: Address;
+  poolAddress: Address;
   tokenAddress: Address;
 };
 
 export function useQuadraticMatching({
-  strategyAddress,
+  poolAddress,
   tokenAddress,
 }: UseQuadraticMatchingProps) {
   const allocations = useAllocations({
     where: {
-      strategy_in: [strategyAddress],
-      to_not_in: [strategyAddress],
-      from_not_in: [strategyAddress],
+      pool_in: [poolAddress],
+      to_not_in: [poolAddress],
+      from_not_in: [poolAddress],
     },
   });
 
-  const matchingToken = useToken(tokenAddress, strategyAddress);
+  const matchingToken = useToken(tokenAddress, poolAddress);
   const matchingFunds = matchingToken.data?.balance ?? BigInt(0);
   const donations = allocations.data?.items ?? [];
 

@@ -46,7 +46,7 @@ export function RegistrationForm({
   return (
     <Form {...form}>
       <form
-        className="relative space-y-2 mx-auto max-w-screen-sm"
+        className="relative space-y-2 mx-auto max-w-(--breakpoint-sm)"
         onSubmit={form.handleSubmit(async (values) => {
           const { cid: metadata } = await upload.mutateAsync(values.metadata);
           register
@@ -54,7 +54,7 @@ export function RegistrationForm({
             .then(onSuccess);
         })}
       >
-        <div className="flex justify-center">
+        {/* <div className="flex justify-center">
           <ImportProject
             onSelect={(project) => {
               console.log("project", project);
@@ -65,10 +65,10 @@ export function RegistrationForm({
           />
         </div>
         <div className="flex gap-2 items-center">
-          <div className="w-full h-[1px] bg-gray-200" />
+          <div className="w-full h-px bg-gray-200" />
           <span className="text-sm text-gray-500">or</span>
-          <div className="w-full h-[1px] bg-gray-200" />
-        </div>
+          <div className="w-full h-px bg-gray-200" />
+        </div> */}
         <FormField
           control={form.control}
           name="metadata.title"

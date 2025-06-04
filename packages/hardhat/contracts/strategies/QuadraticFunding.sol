@@ -1,54 +1,34 @@
-//SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0 <0.9.0;
+// SPDX-License-Identifier: MIT
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+pragma solidity ^0.8.20;
 
-import { Allocator } from "../extensions/Allocator.sol";
-import { Registry, IRegistry } from "../extensions/Registry.sol";
-import { Strategy } from "../base/Strategy.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-/**
- * A simple QuadraticFunding contract that allows matching funds to be added to the Strategy and distributed to projects by the owner
- * @author AlloCapital
- */
-contract QuadraticFunding is Strategy, Allocator, Registry, Ownable {
-    address public immutable donationToken;
-    address public immutable matchingToken;
+import {Pool, PoolConfig} from "../Pool.sol";
 
-    constructor(
-        address owner,
-        address _donationToken,
-        address _matchingToken
-    ) Ownable(owner) Strategy("QuadraticFunding") {
-        donationToken = _donationToken;
-        matchingToken = _matchingToken;
+contract QuadraticFunding is Pool, Context, AccessControl, ReentrancyGuard {
+
+    constructor(string memory _name, string memory _schema, PoolConfig memory _config) Pool(_name, _schema, _config) {
+        // strategyName = _name;
+        // schema = _schema;
+        // metadataURI = _metadataURI;
+        // id = keccak256(abi.encode(strategyName));
+           _grantRole(DEFAULT_ADMIN_ROLE, config.owner);
+        for (uint256 i = 0; i < config.admins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, config.admins[i]);
+        }
     }
 
-    function approve(
-        address project,
-        uint256 index,
-        string memory metadataURI,
-        bytes memory data
-    ) public override onlyOwner {
-        super.approve(project, index, metadataURI, data);
+    function initialize(PoolConfig memory _config, bytes calldata data) public override {
+        // super.initialize(_config, data);
+        _grantRole(DEFAULT_ADMIN_ROLE, _config.owner);
+        for (uint256 i = 0; i < _config.admins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, _config.admins[i]);
+        }
     }
 
-    // Override allocate function to check if tokens are either donation or matching based on the recipient
-    function _allocate(address to, uint256 amount, address token, bytes memory data) internal override nonReentrant {
-        if (to == address(this)) require(token == matchingToken, "Matching funds to strategy must be matching token");
-        if (to != address(this)) require(token == donationToken, "Allocations to projects must be donation token");
-
-        super._allocate(to, amount, token, data);
-    }
-
-    // Distribution of matching funds must be by owner
-    function distribute(
-        address[] memory recipients,
-        uint256[] memory amounts,
-        address token,
-        bytes[] memory data
-    ) public override onlyOwner {
-        require(token == matchingToken, "Must be matching token");
-        super.distribute(recipients, amounts, token, data);
-    }
 }

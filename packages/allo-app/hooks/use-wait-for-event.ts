@@ -3,7 +3,7 @@
 import { useWalletClient } from "wagmi";
 import { Abi, type Hex, parseEventLogs } from "viem";
 import { getTransactionReceipt } from "viem/actions";
-import pRetry, { AbortError } from "p-retry";
+import pRetry from "p-retry";
 
 export function useWaitForEvent(abi: Abi) {
   const { data: client } = useWalletClient();

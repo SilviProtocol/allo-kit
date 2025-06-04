@@ -12,6 +12,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@se-2/sdk": "workspace:*",
     "abitype": "^0.10.2",
     "hono": "^4.5.0",
     "node-fetch-cache": "^5.0.2",

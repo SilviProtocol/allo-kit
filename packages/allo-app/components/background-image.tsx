@@ -14,10 +14,14 @@ export const BackgroundImage = ({
 } & ComponentPropsWithRef<"div">) => (
   <div
     {...props}
-    className={cn(className, "rounded bg-cover bg-center", {
-      ["blur-[40px]"]: fallbackSrc && !src,
-      ["animate-pulse bg-gray-100"]: isLoading,
-    })}
+    className={cn(
+      "bg-cover bg-center h-full w-full object-cover transition-transform duration-300",
+      className,
+      {
+        ["blur-2xl"]: fallbackSrc && !src,
+        ["animate-pulse bg-gray-100"]: isLoading,
+      }
+    )}
     style={{ backgroundImage: `url("${src ?? fallbackSrc}")` }}
   />
 );

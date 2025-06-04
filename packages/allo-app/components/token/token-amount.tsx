@@ -19,6 +19,14 @@ export function TokenAmount({
   return <>{`${formattedAmount} ${hideSymbol ? "" : data?.symbol}`}</>;
 }
 
+export function TokenSymbol({ token }: { token: Address }) {
+  const { data } = useToken(token);
+
+  if (!data) return null;
+
+  return <>{data?.symbol}</>;
+}
+
 export function formatTokenAmount(amount: number | bigint, decimals: number) {
   return formatNumber(Number(formatUnits(BigInt(amount ?? 0), decimals)));
 }

@@ -1,9 +1,9 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { QueryKey, useQueryClient } from "@tanstack/react-query";
 
 export function useInvalidate() {
   const queryClient = useQueryClient();
 
-  return (queryKeys: (readonly unknown[])[]) => {
+  return (queryKeys: QueryKey[]) => {
     // Timeout to let indexer catch up (what could be better solutions?)
     setTimeout(
       () =>

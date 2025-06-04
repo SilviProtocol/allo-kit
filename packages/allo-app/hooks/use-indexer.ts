@@ -3,11 +3,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { OperationResult, TypedDocumentNode } from "urql";
 import { Address, Hex } from "viem";
-import { useChainId } from "wagmi";
 import { createClient } from "~/lib/graphql";
 import { useCurrentChainName } from "./use-current-chain";
 import { chains } from "~/config";
-import { baseSepolia } from "viem/chains";
 
 export type RegistrationWhere = {
   id?: Hex;
@@ -15,6 +13,8 @@ export type RegistrationWhere = {
   address_in?: Address[];
   strategy_in?: Address[];
   isApproved?: boolean;
+  pool_in?: Address[];
+  chainId_in?: number[];
 };
 type AllocationWhere = {
   amount_gt?: number;
@@ -26,15 +26,23 @@ type AllocationWhere = {
   tokenAddress_in?: Address[];
   strategy_in?: Address[];
 };
+type PoolWhere = {
+  address?: Address;
+  address_in?: Address[];
+  pool_in?: Address[];
+  owner_in?: Address[];
+};
+
 export type IndexerQuery = {
   limit?: number;
   orderBy?: string;
   orderDirection?: "asc" | "desc";
-  where?: RegistrationWhere | AllocationWhere;
+  where?: RegistrationWhere | AllocationWhere | PoolWhere;
 };
 
 const indexerUrl = process.env.NEXT_PUBLIC_INDEXER_URL!;
-export function useIndexer<T>({
+
+export function useIndexer<T extends { createdAt?: Date; updatedAt?: Date }>({
   queryKey,
   queryFn,
   query,
@@ -84,18 +92,24 @@ export function useIndexer<T>({
           return queryFn(r.data);
         });
     },
+    select: (data) => ({
+      ...data,
+      items: data.items.map((item) => ({
+        ...item,
+        createdAt: item.createdAt
+          ? new Date(Number(item.createdAt))
+          : undefined,
+        updatedAt: item.updatedAt
+          ? new Date(Number(item.updatedAt))
+          : undefined,
+      })),
+    }),
     refetchInterval: ({ state }) => {
-      if (state.data?.items.length) return 0;
-
-      const retryCount = state.dataUpdateCount - 1;
-      const elapsedTime = Date.now() - state.dataUpdatedAt;
-
-      if (retryCount >= maxRetries || elapsedTime > retryTimeout) {
-        return 0;
-      }
-
-      return 1000;
+      // Stop refetching if we have data or if we've hit the retry limit
+      return (state.data?.items?.length ?? 0) > 0 ? 0 : 1000;
     },
+    retry: 5, // Will retry failed requests 5 times
+    retryDelay: 1000, // Wait 1 second between retries
     ...rest,
   });
 

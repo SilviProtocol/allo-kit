@@ -6,7 +6,7 @@ import { LoaderIcon, LucideIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 dark:focus-visible:ring-neutral-300",
+  "cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 dark:focus-visible:ring-neutral-300",
   {
     variants: {
       variant: {
@@ -44,6 +44,7 @@ export interface ButtonProps
   icon?: React.ComponentType;
   iconLeft?: LucideIcon | React.ComponentType<{ className: string }>;
   iconRight?: LucideIcon | React.ComponentType<{ className: string }>;
+  iconProps?: React.ComponentProps<"svg">;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -65,6 +66,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     const LeftIcon = isLoading ? LoaderIcon : icon || iconLeft;
 
+    const iconProps = {
+      ...props.iconProps,
+      className: cn("size-4", {
+        ["animate-spin"]: isLoading,
+        ["mr-2"]: children && LeftIcon,
+        ["ml-2"]: children && RightIcon,
+      }),
+    };
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
@@ -73,18 +82,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         <>
-          {LeftIcon && (
-            <LeftIcon
-              className={cn("size-4", {
-                ["mr-2"]: children,
-                ["animate-spin"]: isLoading,
-              })}
-            />
-          )}
+          {LeftIcon && <LeftIcon {...iconProps} />}
           {children}
-          {RightIcon && (
-            <RightIcon className={cn("size-4", { ["ml-2"]: children })} />
-          )}
+          {RightIcon && <RightIcon {...iconProps} />}
         </>
       </Comp>
     );

@@ -15,7 +15,6 @@ export function EmptyState({
   return (
     <Alert>
       {createElement(icon, { className: "size-4" })}
-      <Info className="size-4" />
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription>{description}</AlertDescription>
     </Alert>

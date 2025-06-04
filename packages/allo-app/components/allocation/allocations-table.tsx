@@ -20,6 +20,7 @@ export function AllocationsTable({ query }: { query: IndexerQuery }) {
       <TableHeader>
         <TableRow>
           <TableHead>Amount</TableHead>
+          <TableHead>Pool</TableHead>
           <TableHead>To</TableHead>
           <TableHead>From</TableHead>
           <TableHead>Date</TableHead>
@@ -34,9 +35,10 @@ export function AllocationsTable({ query }: { query: IndexerQuery }) {
                 token={allocation.token.address!}
               />
             </TableCell>
+            <TableCell>{allocation.pool?.address}</TableCell>
             <TableCell>
               <EnsName address={allocation.to} />
-            </TableCell>{" "}
+            </TableCell>
             <TableCell>
               <EnsName address={allocation.from} />
             </TableCell>

@@ -3,25 +3,22 @@
 import { useMemo } from "react";
 import { Address } from "viem";
 import { TokenAmount } from "~/components/token/token-amount";
-import { useAllocations } from "~/components/allocation/use-allocate";
-import { useToken } from "~/components/token/use-token";
 import { useInvalidate } from "~/hooks/use-invalidate";
 import { MatchingFunds } from "~/components/allocation/matching-funds";
 import { DistributeButton } from "~/components/allocation/distribute-button";
 import { getContributions } from "~/lib/quadratic";
-import { calculateQuadraticMatching } from "~/lib/quadratic";
-import { useProjects } from "~/components/registration/use-register";
 import { Grid } from "~/components/grid";
 import { formatNumber } from "~/lib/format";
 import { AllocationItem } from "~/components/allocation/allocation-item";
 import { Registration } from "~/schemas";
 import { useQuadraticMatching } from "~/hooks/use-quadratic-matching";
+import { useRegistrations } from "../registration/use-register";
 
 export function QuadraticDistribution({
-  strategyAddress,
+  poolAddress,
   tokenAddress,
 }: {
-  strategyAddress: Address;
+  poolAddress: Address;
   tokenAddress: Address;
 }) {
   const invalidate = useInvalidate();
@@ -34,12 +31,12 @@ export function QuadraticDistribution({
     isLoading,
     queryKeys,
   } = useQuadraticMatching({
-    strategyAddress,
+    poolAddress,
     tokenAddress,
   });
 
   // Fetch projects for the donations
-  const { data: projects } = useProjects({
+  const { data: projects } = useRegistrations({
     where: {
       address_in: donations.map((alloc) => alloc.to),
     },
@@ -67,15 +64,12 @@ export function QuadraticDistribution({
         <strong>
           <TokenAmount amount={matchingFunds} token={tokenAddress} />
         </strong>
-        <MatchingFunds
-          strategyAddress={strategyAddress}
-          tokenAddress={tokenAddress}
-        />
+        <MatchingFunds poolAddress={poolAddress} tokenAddress={tokenAddress} />
         <DistributeButton
-          strategyAddress={strategyAddress}
+          poolAddress={poolAddress}
           tokenAddress={tokenAddress}
           matching={matching}
-          onSuccess={() => invalidate(queryKeys)}
+          onSuccess={() => invalidate([queryKeys])}
         />
       </div>
       <Grid

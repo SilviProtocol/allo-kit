@@ -1,0 +1,49 @@
+{
+  "name": "@se-2/sdk",
+  "version": "0.1.0",
+  "module": "src/index.ts",
+  "type": "module",
+  "description": "SDK for interacting with AlloKit smart contracts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    "./deployedContracts": "./dist/contracts/deployedContracts.js",
+    "./package.json": "./package.json",
+    ".": "./dist/src/index.js",
+    "./utils": "./dist/src/utils.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "generate": "wagmi generate"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@wagmi/cli": "^2.3.1",
+    "@wagmi/core": "^2.16.3",
+    "viem": "^2.21.56"
+  },
+  "files": [
+    "dist",
+    "dist/contracts",
+    "src"
+  ],
+  "keywords": [
+    "blockchain",
+    "sdk",
+    "ethereum",
+    "commit-protocol"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allocapital/allo-kit-qf.git"
+  },
+  "author": "Carl Barrdahl",
+  "license": "MIT"
+}

@@ -23,18 +23,7 @@ abstract contract MerkleClaim is IMerkleClaim {
         emit MerkleSet(root);
     }
 
-    function claim(
-        address recipient,
-        uint256 amount,
-        address token,
-        bytes32[] memory proof,
-        bytes memory data
-    ) public virtual {
-        _claim(root, recipient, amount, token, proof, data);
-    }
-
     function _claim(
-        bytes32 merkleRoot,
         address recipient,
         uint256 amount,
         address token,
@@ -42,11 +31,11 @@ abstract contract MerkleClaim is IMerkleClaim {
         bytes memory data
     ) internal virtual {
         // TODO: Do we need to check if merkleRoot has been set first?
-        require(!hasClaimed[merkleRoot][recipient], "Already claimed");
-        hasClaimed[merkleRoot][recipient] = true;
+        require(!hasClaimed[root][recipient], "Already claimed");
+        hasClaimed[root][recipient] = true;
 
         bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(token, recipient, amount))));
-        require(MerkleProof.verify(proof, merkleRoot, leaf), "Invalid proof");
+        require(MerkleProof.verify(proof, root, leaf), "Invalid proof");
         IERC20(token).safeTransfer(recipient, amount);
         emit Claim(recipient, amount, token, data);
     }

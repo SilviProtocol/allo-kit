@@ -7,19 +7,19 @@ import { buildAllocations } from "~/components/cart/use-cart";
 import { MatchingResult } from "~/lib/quadratic";
 
 export function DistributeButton({
-  strategyAddress,
+  poolAddress,
   tokenAddress,
   matching,
   disabled,
   onSuccess,
 }: {
-  strategyAddress: Address;
+  poolAddress: Address;
   tokenAddress: Address;
   matching: MatchingResult;
   disabled?: boolean;
   onSuccess: () => void;
 }) {
-  const distribute = useDistribute({ strategyAddress });
+  const distribute = useDistribute(poolAddress);
   return (
     <Button
       disabled={disabled}

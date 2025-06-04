@@ -1,11 +1,10 @@
 "use client";
 
 import {
-  allocatorAbi,
-  useWriteAllocatorAllocate,
-  useWriteAllocatorDistribute,
+  poolAbi,
+  useWritePoolAllocate,
+  useWritePoolDistribute,
 } from "~/generated/wagmi";
-import { useToast } from "~/hooks/use-toast";
 import { useWaitForEvent } from "~/hooks/use-wait-for-event";
 import { useMutation } from "@tanstack/react-query";
 import { Address, Hex } from "viem";
@@ -14,24 +13,21 @@ import { ALLOCATIONS_SCHEMA } from "~/queries";
 import { useIndexer, IndexerQuery } from "~/hooks/use-indexer";
 import { useAccount } from "wagmi";
 import { Allocation } from "~/schemas";
+import { toast } from "sonner";
 
-export function useAllocate({ strategyAddress }: { strategyAddress: Address }) {
-  const { toast } = useToast();
-  const allocate = useWriteAllocatorAllocate({});
+export function useAllocate(poolAddress: Address) {
+  const allocate = useWritePoolAllocate({});
 
-  const waitFor = useWaitForEvent(allocatorAbi);
+  const waitFor = useWaitForEvent(poolAbi);
 
   return useMutation({
     mutationFn: async (args: [Address[], bigint[], Address, Hex[]]) => {
       const hash = await allocate.writeContractAsync(
-        { address: strategyAddress, args },
+        { address: poolAddress, args },
         {
-          onSuccess: () => toast({ title: "Allocated!" }),
+          onSuccess: () => toast.success("Allocated!"),
           onError: (error) =>
-            toast({
-              title: extractErrorReason(String(error)) ?? "Allocated error",
-              variant: "destructive",
-            }),
+            toast.error(extractErrorReason(String(error)) ?? "Allocated error"),
         }
       );
       return waitFor(hash, "Allocate");
@@ -39,27 +35,21 @@ export function useAllocate({ strategyAddress }: { strategyAddress: Address }) {
   });
 }
 
-export function useDistribute({
-  strategyAddress,
-}: {
-  strategyAddress: Address;
-}) {
-  const { toast } = useToast();
-  const distribute = useWriteAllocatorDistribute();
+export function useDistribute(poolAddress: Address) {
+  const distribute = useWritePoolDistribute();
 
-  const waitFor = useWaitForEvent(allocatorAbi);
+  const waitFor = useWaitForEvent(poolAbi);
 
   return useMutation({
     mutationFn: async (args: [Address[], bigint[], Address, Hex[]]) => {
       const hash = await distribute.writeContractAsync(
-        { address: strategyAddress, args },
+        { address: poolAddress, args },
         {
-          onSuccess: () => toast({ title: "Distributed!" }),
+          onSuccess: () => toast.success("Distributed!"),
           onError: (error) =>
-            toast({
-              title: extractErrorReason(String(error)) ?? "Distributed error",
-              variant: "destructive",
-            }),
+            toast.error(
+              extractErrorReason(String(error)) ?? "Distributed error"
+            ),
         }
       );
       return waitFor(hash, "Allocate");
@@ -69,23 +59,23 @@ export function useDistribute({
 
 // Deposit simply calls allocate with params to transfer tokens to the strategy
 // Used to fund strategy contracts
-export function useDeposit({ strategyAddress }: { strategyAddress: Address }) {
-  const { mutate, mutateAsync, ...rest } = useAllocate({ strategyAddress });
+export function useDeposit(poolAddress: Address) {
+  const { mutate, mutateAsync, ...rest } = useAllocate(poolAddress);
 
   return {
     ...rest,
     mutate: ([amount, token]: [bigint, Address]) =>
-      mutate([[strategyAddress], [amount], token, ["0x"]]),
+      mutate([[poolAddress], [amount], token, ["0x"]]),
     mutateAsync: ([amount, token]: [bigint, Address]) =>
-      mutateAsync([[strategyAddress], [amount], token, ["0x"]]),
+      mutateAsync([[poolAddress], [amount], token, ["0x"]]),
   };
 }
 
 // Withdraw simply calls distribute with params to transfer tokens to your address
 // Used to withdraw funds from strategy contracts
-export function useWithdraw({ strategyAddress }: { strategyAddress: Address }) {
+export function useWithdraw(poolAddress: Address) {
   const { address } = useAccount();
-  const { mutate, mutateAsync, ...rest } = useDistribute({ strategyAddress });
+  const { mutate, mutateAsync, ...rest } = useDistribute(poolAddress);
 
   return {
     ...rest,
@@ -106,25 +96,25 @@ export function useAllocations(variables: IndexerQuery) {
 }
 
 export function useDistributions(
-  strategyAddress: Address,
+  poolAddress: Address,
   variables: IndexerQuery
 ) {
   return useAllocations({
     ...variables,
     where: {
-      strategy_in: [strategyAddress],
-      from_in: [strategyAddress],
+      strategy_in: [poolAddress],
+      from_in: [poolAddress],
       ...variables.where,
     },
   });
 }
 
-export function useDeposits(strategyAddress: Address, variables: IndexerQuery) {
+export function useDeposits(poolAddress: Address, variables: IndexerQuery) {
   return useAllocations({
     ...variables,
     where: {
-      strategy_in: [strategyAddress],
-      to_in: [strategyAddress],
+      strategy_in: [poolAddress],
+      to_in: [poolAddress],
       ...variables.where,
     },
   });

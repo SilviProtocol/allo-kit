@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+import { Contract } from "ethers";
 
 /**
  * Deploys a contract named "YourContract" using the deployer account and
@@ -21,6 +22,16 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
+  await deploy("PoolFactory", {
+    from: deployer,
+    // Contract constructor arguments
+    args: [],
+    log: true,
+    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+    // automatically mining the contract deployment transaction. There is no effect on live networks.
+    autoMine: true,
+  });
+
   await deploy("ERC20Mock", {
     from: deployer,
     // Contract constructor arguments
@@ -31,59 +42,75 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
 
   const owner = deployer; // Add your owner address here
 
-  await deploy("YourStrategy", {
+  await deploy("Pool", {
     from: deployer,
     // Contract constructor arguments
-    args: [owner],
+    args: [
+      "",
+      "",
+      {
+        owner,
+        allocationToken: "0x0000000000000000000000000000000000000000",
+        distributionToken: "0x0000000000000000000000000000000000000000",
+        maxAmount: 0n,
+        metadataURI: "",
+        admins: [],
+        timestamps: [],
+      },
+    ],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
   });
 
-  await deploy("SimpleGrants", {
+  await deploy("RetroFunding", {
     from: deployer,
     // Contract constructor arguments
-    args: [owner],
+    args: [
+      "RetroFunding",
+      "uint256 amount",
+      {
+        owner,
+        allocationToken: "0x0000000000000000000000000000000000000000",
+        distributionToken: "0x0000000000000000000000000000000000000000",
+        maxAmount: 0n,
+        metadataURI: "",
+        admins: [],
+        timestamps: [],
+      },
+    ],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
   });
 
-  // Deploy these so we can index them from packages/allo-indexer
-  await deploy("Strategy", {
-    from: deployer,
-    // Contract constructor arguments
-    args: ["StrategyName"],
-    log: true,
-    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-    // automatically mining the contract deployment transaction. There is no effect on live networks.
-    autoMine: true,
-  });
-
-  await deploy("Allocator", {
-    from: deployer,
-    // Contract constructor arguments
-    args: [],
-    log: true,
-    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-    // automatically mining the contract deployment transaction. There is no effect on live networks.
-    autoMine: true,
-  });
-  await deploy("Registry", {
-    from: deployer,
-    // Contract constructor arguments
-    args: [],
-    log: true,
-    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-    // automatically mining the contract deployment transaction. There is no effect on live networks.
-    autoMine: true,
-  });
+  // await deploy("QuadraticFunding", {
+  //   from: deployer,
+  //   // Contract constructor arguments
+  //   args: [
+  //     "QuadraticFunding",
+  //     "uint256 amount",
+  //     {
+  //       owner,
+  //       allocationToken: "0x0000000000000000000000000000000000000000",
+  //       distributionToken: "0x0000000000000000000000000000000000000000",
+  //       maxAmount: 0n,
+  //       metadataURI: "",
+  //       admins: [],
+  //       timestamps: [],
+  //     },
+  //   ],
+  //   log: true,
+  //   // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+  //   // automatically mining the contract deployment transaction. There is no effect on live networks.
+  //   autoMine: true,
+  // });
 };
 
 export default deployYourContract;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["AlloIRL"];
+deployYourContract.tags = ["SimpleGrants"];

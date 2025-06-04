@@ -10,7 +10,7 @@ const SCALE = 18n ** PRECISION; // Scaling factor for fixed-point numbers
 
 export function getContributions(allocations: Allocation[]): ContributionMap {
   return allocations.reduce((acc, { to, from, amount }) => {
-    (acc[to] ??= {})[from] = BigInt(acc[to][from] ?? 0) + BigInt(amount);
+    (acc[to] ??= {})[from] = BigInt(acc[to][from] ?? 0) + BigInt(amount ?? 0);
     return acc;
   }, {} as ContributionMap);
 }

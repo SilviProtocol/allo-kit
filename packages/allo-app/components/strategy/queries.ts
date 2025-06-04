@@ -19,6 +19,8 @@ export const STRATEGIES_QUERY = gql`
     ) {
       items {
         name
+        address
+        schema
         createdAt
       }
     }

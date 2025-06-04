@@ -101,7 +101,12 @@ function getContractDataFromDeployments() {
  */
 const generateTsAbis: DeployFunction = async function () {
   // const TARGET_DIR = "../nextjs/contracts/";
-  const TARGET_DIRS = ["../nextjs/contracts/", "../allo-indexer/contracts/", "../allo-app/contracts/"];
+  const TARGET_DIRS = [
+    "../nextjs/contracts/",
+    "../allo-indexer/contracts/",
+    "../allo-app/contracts/",
+    "../sdk/contracts/",
+  ];
   const allContractsData = getContractDataFromDeployments();
 
   const fileContent = Object.entries(allContractsData).reduce((content, [chainId, chainConfig]) => {

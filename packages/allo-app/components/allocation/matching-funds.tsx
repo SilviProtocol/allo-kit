@@ -5,25 +5,32 @@ import { Address, parseUnits } from "viem";
 import { AllowanceCheck } from "~/components/token/allowance-check";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { useDeposit, useWithdraw } from "~/components/allocation/use-allocate";
-import { useContracts } from "~/hooks/use-contracts";
+import {
+  useAllocations,
+  useDeposit,
+  useWithdraw,
+} from "~/components/allocation/use-allocate";
 import { useToken } from "~/components/token/use-token";
 import { useInvalidate } from "~/hooks/use-invalidate";
 
 export function MatchingFunds({
-  strategyAddress,
+  poolAddress,
   tokenAddress,
 }: {
-  strategyAddress: Address;
+  poolAddress: Address;
   tokenAddress: Address;
 }) {
   const invalidate = useInvalidate();
-  const { SimpleGrants } = useContracts();
   const [value, setValue] = useState<string>("");
-  const fund = useDeposit({ strategyAddress });
-  const withdraw = useWithdraw({ strategyAddress });
-  const token = useToken(tokenAddress, SimpleGrants?.address);
-
+  const fund = useDeposit(poolAddress);
+  const withdraw = useWithdraw(poolAddress);
+  const token = useToken(tokenAddress, poolAddress);
+  const contributions = useAllocations({
+    where: {
+      pool_in: [poolAddress],
+      to_in: [poolAddress],
+    },
+  });
   return (
     <form
       className="flex flex-col sm:flex-row gap-1"
@@ -35,7 +42,7 @@ export function MatchingFunds({
           .mutateAsync([parseUnits(value, token.data?.decimals), tokenAddress])
           .then(() => {
             setValue("");
-            invalidate([token.queryKey]);
+            invalidate([token.queryKey, contributions.queryKey]);
           });
       }}
     >
@@ -48,7 +55,7 @@ export function MatchingFunds({
       />
       <AllowanceCheck
         amount={BigInt(value ?? 0)}
-        spenderAddress={strategyAddress}
+        spenderAddress={poolAddress}
         tokenAddress={tokenAddress}
       >
         <Button type="submit" disabled={!value}>

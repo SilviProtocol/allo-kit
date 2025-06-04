@@ -1,59 +1,13 @@
 import gql from "graphql-tag";
 
-const META = `
-totalCount
-pageInfo {
-    hasNextPage
-    hasPreviousPage
-    startCursor
-    endCursor
-}
-`;
-
-export const REGISTRATIONS_SCHEMA = gql`
-  query Registrations(
-    $after: String
-    $before: String
-    $orderBy: String
-    $orderDirection: String
-    $limit: Int
-    $where: registrationFilter
-  ) {
-    registrations(
-      after: $after
-      before: $before
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-      limit: $limit
-      where: $where
-    ) {
-      items {
-        id
-        index
-        address
-        metadata
-        review
-        createdAt
-        updatedAt
-        isApproved    
-        allocations {
-          items {
-            id
-            amount
-            to
-            from
-            token
-            createdAt
-          }
-        }
-        strategy {
-          address
-          name
-        }
-      }
-      ${META}
+export const META_SCHEMA = `
+    totalCount
+    pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
     }
-  }
 `;
 
 export const ALLOCATIONS_SCHEMA = gql`
@@ -75,6 +29,7 @@ export const ALLOCATIONS_SCHEMA = gql`
     ) {
       items {
         id
+        chainId
         amount
         to
         from
@@ -84,8 +39,12 @@ export const ALLOCATIONS_SCHEMA = gql`
           address
           metadata
         }
+        pool { 
+          address
+          metadata
+        }
       }
-      ${META}
+      ${META_SCHEMA}
     }
   }
 `;

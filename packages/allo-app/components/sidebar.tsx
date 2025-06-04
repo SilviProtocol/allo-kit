@@ -13,6 +13,7 @@ import {
   ListChecks,
   Map,
   PieChart,
+  Plus,
   Radical,
   Send,
   Settings,
@@ -69,6 +70,7 @@ import { useSidebar } from "~/components/ui/sidebar";
 
 import { NetworkSelector } from "./network-selector";
 import Link from "next/link";
+import { Logo } from "./logo";
 
 const links = [
   {
@@ -106,21 +108,22 @@ const admin = [
   },
 ];
 
+const menu = [
+  {
+    name: "Create Pool",
+    url: "/pool/create",
+    icon: Plus,
+  },
+];
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar variant="inset" {...props}>
+    <Sidebar variant="inset" collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/" prefetch>
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <SparklesIcon className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">AlloKit</span>
-                </div>
-              </Link>
+              <Logo />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -195,7 +198,7 @@ export function NavUser() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}

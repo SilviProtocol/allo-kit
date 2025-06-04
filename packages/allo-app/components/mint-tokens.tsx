@@ -23,7 +23,7 @@ export function MintTokens({ tokenAddress }: { tokenAddress: Address }) {
       <AlertTitle>Mint test tokens</AlertTitle>
       <AlertDescription>
         You can mint test tokens to create and fund projects
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex gap-1">
             Balance:
             <div className="font-semibold">

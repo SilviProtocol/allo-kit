@@ -120,7 +120,7 @@ export function ImportProject({
   //       <DialogTrigger>
   //         <Button variant={"secondary"}>Import Project</Button>
   //       </DialogTrigger>
-  //       <DialogContent className="max-w-screen-sm">
+  //       <DialogContent className="max-w-(--breakpoint-sm)">
   //   <DialogHeader>
   //     <DialogTitle>Import Project</DialogTitle>
   //   </DialogHeader>

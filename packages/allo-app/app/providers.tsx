@@ -32,14 +32,14 @@ const config = getDefaultConfig({
         rainbowWallet,
         coinbaseWallet,
         metaMaskWallet,
-        walletConnectWallet,
+        // walletConnectWallet,
         ...(process.env.NODE_ENV === "development"
           ? [rainbowkitBurnerWallet]
           : []),
       ],
     },
   ],
-  ssr: true, // If your dApp uses server side rendering (SSR)
+  ssr: true,
 });
 
 export function Providers(props: PropsWithChildren) {

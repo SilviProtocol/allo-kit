@@ -29,14 +29,7 @@ ponder.on("PoolFactory:Created", async ({ event, context }) => {
     },
   } = event.args;
   const { chainId } = context.network;
-  console.log("PoolFactory:Deployed", event.args, {
-    owner,
-    metadataURI,
-    allocationToken,
-    distributionToken,
-    admins,
-    maxAmount,
-  });
+
   const metadata = await fetchMetadata(metadataURI);
   await context.db
     .insert(schemas.pool)
@@ -67,7 +60,6 @@ ponder.on("Pool:Deployed", async ({ event, context }) => {
   const { chainId } = context.network;
   const metadata = await fetchMetadata(metadataURI);
 
-  console.log("Strategy:Deployed", event.args);
   if (!name) return;
   await context.db
     .insert(schemas.strategy)
@@ -87,7 +79,7 @@ ponder.on("Pool:Deployed", async ({ event, context }) => {
 
 ponder.on("Pool:Register", async ({ event, context }) => {
   const { chainId } = context.network;
-  const { index, project, metadataURI, data, owner } = event.args;
+  const { project, metadataURI, data, owner } = event.args;
   const metadata = await fetchMetadata(metadataURI);
 
   await context.db
@@ -95,14 +87,13 @@ ponder.on("Pool:Register", async ({ event, context }) => {
     .values({
       id: registrationId(event, context.network.chainId),
       chainId,
-      // index,
       address: project,
       strategy: event.log.address,
       pool: event.log.address,
       owner,
       metadataURI,
       metadata,
-      isApproved: false,
+      status: "pending",
       data,
       createdAt: event.block.timestamp * 1000n,
       updatedAt: event.block.timestamp * 1000n,
@@ -110,15 +101,16 @@ ponder.on("Pool:Register", async ({ event, context }) => {
     .onConflictDoNothing();
 });
 
-ponder.on("Pool:Approve", async ({ event, context }) => {
+ponder.on("Pool:Review", async ({ event, context }) => {
   const review = await fetchMetadata(event.args.metadataURI);
 
+  const statusMap = ["pending", "approved", "rejected"] as const;
   await context.db
     .update(schemas.registration, {
       id: registrationId(event, context.network.chainId),
     })
     .set(() => ({
-      isApproved: true,
+      status: statusMap[event.args.status],
       approver: event.args.approver,
       updatedAt: event.block.timestamp * 1000n,
       review,
@@ -133,7 +125,6 @@ ponder.on("Pool:Update", async ({ event, context }) => {
       id: registrationId(event, context.network.chainId),
     })
     .set(() => ({
-      isApproved: true,
       updatedAt: event.block.timestamp * 1000n,
       metadata,
     }));
@@ -144,9 +135,6 @@ ponder.on("Pool:Allocate", async ({ event, context }) => {
   const { to, from, token, amount } = event.args;
 
   const [decimals, symbol] = await fetchToken(token, context.client);
-  console.log("----");
-  console.log("Allocator:Allocate", event);
-  console.log("----");
   const tokenPrice = await fetchTokenPrice(symbol);
   const amountInUSD = toAmountInUSD(amount, tokenPrice);
   await context.db.insert(schemas.allocation).values({

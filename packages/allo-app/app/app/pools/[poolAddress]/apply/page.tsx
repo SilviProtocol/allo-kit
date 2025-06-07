@@ -14,7 +14,7 @@ export default function PoolApplyPage() {
   return (
     <Page title="Apply to Pool">
       <RegistrationForm
-        strategyAddress={poolAddress}
+        poolAddress={poolAddress}
         defaultValues={{
           address,
           metadata: {

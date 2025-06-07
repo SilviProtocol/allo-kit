@@ -1,6 +1,5 @@
 "use client";
 import { type z } from "zod";
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Address } from "viem/accounts";
@@ -21,28 +20,25 @@ import { BalanceCheck } from "~/components/token/balance-check";
 import { ImageUpload } from "~/components/image-upload";
 import { RegistrationSchema } from "./schemas";
 import { useRegister } from "./use-register";
-import { ImportProject } from "./import-project";
 
 export function RegistrationForm({
-  strategyAddress,
+  poolAddress,
   defaultValues,
   onSuccess,
 }: {
-  strategyAddress: Address;
+  poolAddress: Address;
   defaultValues?: Partial<z.infer<typeof RegistrationSchema>>;
   onSuccess?(value: { project: string }): void;
 }) {
-  const router = useRouter();
   const form = useForm<z.infer<typeof RegistrationSchema>>({
     resolver: zodResolver(RegistrationSchema),
     defaultValues,
   });
 
-  const register = useRegister({ strategyAddress });
+  const register = useRegister(poolAddress);
   const upload = useIpfsUpload();
 
   const isLoading = upload.isPending || register.isPending;
-  console.log(form.formState);
   return (
     <Form {...form}>
       <form

@@ -16,7 +16,7 @@ import { REGISTRATIONS_SCHEMA } from "./queries";
 
 // Register a Project or Application
 // calls contract Registry.register
-export function useRegister({ strategyAddress }: { strategyAddress: Address }) {
+export function useRegister(poolAddress: Address) {
   const register = useWritePoolRegister();
 
   const waitFor = useWaitForEvent(poolAbi);
@@ -24,7 +24,7 @@ export function useRegister({ strategyAddress }: { strategyAddress: Address }) {
   return useMutation({
     mutationFn: async (args: [Address, string, Hex]) => {
       const hash = await register.writeContractAsync(
-        { address: strategyAddress, args },
+        { address: poolAddress, args },
         {
           onSuccess: () => toast.success("Project Registered!"),
           onError: (error) =>
@@ -40,11 +40,7 @@ export function useRegister({ strategyAddress }: { strategyAddress: Address }) {
 
 // Approve Project or Application
 // calls Registry.review
-export function useRegistryReview({
-  strategyAddress,
-}: {
-  strategyAddress: Address;
-}) {
+export function useRegistryReview(poolAddress: Address) {
   const review = useWritePoolReview({});
 
   const waitFor = useWaitForEvent(poolAbi);
@@ -52,7 +48,7 @@ export function useRegistryReview({
   return useMutation({
     mutationFn: async (args: [Address, number, string, Hex]) => {
       const hash = await review.writeContractAsync(
-        { address: strategyAddress, args },
+        { address: poolAddress, args },
         {
           onSuccess: () => toast.success("Registration reviewed!"),
           onError: (error) =>

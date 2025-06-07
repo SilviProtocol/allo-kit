@@ -9,9 +9,7 @@ export function RegistrationReviewButton({ id }: { id: Hex }) {
   const { data: registration, isPending, queryKey } = useRegistrationById(id);
   const invalidate = useInvalidate();
 
-  const review = useRegistryReview({
-    strategyAddress: registration?.pool?.address!,
-  });
+  const review = useRegistryReview(registration?.pool?.address!);
 
   if (isPending) return null;
 

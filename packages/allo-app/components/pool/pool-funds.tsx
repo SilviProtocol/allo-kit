@@ -22,7 +22,7 @@ export function PoolFunds({ pool }: { pool: Pool }) {
   const poolAddress = pool?.address;
   const tokenAddress = pool?.distributionToken as Address;
 
-  const Contributions = useAllocations({
+  const contributions = useAllocations({
     where: {
       pool_in: [poolAddress],
       to_in: [poolAddress],
@@ -75,7 +75,7 @@ export function PoolFunds({ pool }: { pool: Pool }) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {Contributions.data?.items?.map((tx) => (
+              {contributions.data?.items?.map((tx) => (
                 <div key={tx.id} className="flex items-center justify-between">
                   <div className="space-y-1">
                     <p className="text-sm font-medium">

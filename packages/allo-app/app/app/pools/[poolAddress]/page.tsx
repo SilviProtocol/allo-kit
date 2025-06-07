@@ -68,7 +68,7 @@ export default function PoolDetailsPage() {
       <h3 className=" font-semibold">Projects</h3>
       <RegistrationsList
         query={{
-          where: { pool_in: [poolAddress], isApproved: true },
+          where: { pool_in: [poolAddress], status_in: ["approved"] },
         }}
       />
     </Page>

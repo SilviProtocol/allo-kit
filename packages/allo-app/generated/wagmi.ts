@@ -63,26 +63,32 @@ export const poolAbi = [
     anonymous: false,
     inputs: [
       {
-        name: 'project',
+        name: 'updater',
         internalType: 'address',
         type: 'address',
         indexed: true,
       },
       {
-        name: 'approver',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'metadataURI',
-        internalType: 'string',
-        type: 'string',
+        name: 'config',
+        internalType: 'struct PoolConfig',
+        type: 'tuple',
+        components: [
+          { name: 'owner', internalType: 'address', type: 'address' },
+          { name: 'admins', internalType: 'address[]', type: 'address[]' },
+          { name: 'allocationToken', internalType: 'address', type: 'address' },
+          {
+            name: 'distributionToken',
+            internalType: 'address',
+            type: 'address',
+          },
+          { name: 'maxAmount', internalType: 'uint256', type: 'uint256' },
+          { name: 'timestamps', internalType: 'uint64[]', type: 'uint64[]' },
+          { name: 'metadataURI', internalType: 'string', type: 'string' },
+        ],
         indexed: false,
       },
-      { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
     ],
-    name: 'Approve',
+    name: 'Configure',
   },
   {
     type: 'event',
@@ -159,8 +165,9 @@ export const poolAbi = [
         type: 'address',
         indexed: true,
       },
+      { name: 'status', internalType: 'uint8', type: 'uint8', indexed: false },
       {
-        name: 'rejecter',
+        name: 'approver',
         internalType: 'address',
         type: 'address',
         indexed: true,
@@ -173,7 +180,7 @@ export const poolAbi = [
       },
       { name: 'data', internalType: 'bytes', type: 'bytes', indexed: false },
     ],
-    name: 'Reject',
+    name: 'Review',
   },
   {
     type: 'event',
@@ -216,11 +223,27 @@ export const poolAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'project', internalType: 'address', type: 'address' },
-      { name: '_metadataURI', internalType: 'string', type: 'string' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
+      { name: '_updater', internalType: 'address', type: 'address' },
+      {
+        name: '_config',
+        internalType: 'struct PoolConfig',
+        type: 'tuple',
+        components: [
+          { name: 'owner', internalType: 'address', type: 'address' },
+          { name: 'admins', internalType: 'address[]', type: 'address[]' },
+          { name: 'allocationToken', internalType: 'address', type: 'address' },
+          {
+            name: 'distributionToken',
+            internalType: 'address',
+            type: 'address',
+          },
+          { name: 'maxAmount', internalType: 'uint256', type: 'uint256' },
+          { name: 'timestamps', internalType: 'uint64[]', type: 'uint64[]' },
+          { name: 'metadataURI', internalType: 'string', type: 'string' },
+        ],
+      },
     ],
-    name: '_approve',
+    name: '_configure',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -251,10 +274,11 @@ export const poolAbi = [
     type: 'function',
     inputs: [
       { name: 'project', internalType: 'address', type: 'address' },
+      { name: 'status', internalType: 'uint8', type: 'uint8' },
       { name: '_metadataURI', internalType: 'string', type: 'string' },
       { name: 'data', internalType: 'bytes', type: 'bytes' },
     ],
-    name: '_reject',
+    name: '_review',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -433,11 +457,11 @@ export const useWritePoolAllocate = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link poolAbi}__ and `functionName` set to `"_approve"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link poolAbi}__ and `functionName` set to `"_configure"`
  */
-export const useWritePoolApprove = /*#__PURE__*/ createUseWriteContract({
+export const useWritePoolConfigure = /*#__PURE__*/ createUseWriteContract({
   abi: poolAbi,
-  functionName: '_approve',
+  functionName: '_configure',
 })
 
 /**
@@ -457,11 +481,11 @@ export const useWritePoolRegister = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link poolAbi}__ and `functionName` set to `"_reject"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link poolAbi}__ and `functionName` set to `"_review"`
  */
-export const useWritePoolReject = /*#__PURE__*/ createUseWriteContract({
+export const useWritePoolReview = /*#__PURE__*/ createUseWriteContract({
   abi: poolAbi,
-  functionName: '_reject',
+  functionName: '_review',
 })
 
 /**
@@ -496,12 +520,11 @@ export const useSimulatePoolAllocate = /*#__PURE__*/ createUseSimulateContract({
 })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link poolAbi}__ and `functionName` set to `"_approve"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link poolAbi}__ and `functionName` set to `"_configure"`
  */
-export const useSimulatePoolApprove = /*#__PURE__*/ createUseSimulateContract({
-  abi: poolAbi,
-  functionName: '_approve',
-})
+export const useSimulatePoolConfigure = /*#__PURE__*/ createUseSimulateContract(
+  { abi: poolAbi, functionName: '_configure' },
+)
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link poolAbi}__ and `functionName` set to `"_distribute"`
@@ -521,11 +544,11 @@ export const useSimulatePoolRegister = /*#__PURE__*/ createUseSimulateContract({
 })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link poolAbi}__ and `functionName` set to `"_reject"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link poolAbi}__ and `functionName` set to `"_review"`
  */
-export const useSimulatePoolReject = /*#__PURE__*/ createUseSimulateContract({
+export const useSimulatePoolReview = /*#__PURE__*/ createUseSimulateContract({
   abi: poolAbi,
-  functionName: '_reject',
+  functionName: '_review',
 })
 
 /**
@@ -562,12 +585,12 @@ export const useWatchPoolAllocateEvent =
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link poolAbi}__ and `eventName` set to `"Approve"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link poolAbi}__ and `eventName` set to `"Configure"`
  */
-export const useWatchPoolApproveEvent =
+export const useWatchPoolConfigureEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: poolAbi,
-    eventName: 'Approve',
+    eventName: 'Configure',
   })
 
 /**
@@ -589,12 +612,12 @@ export const useWatchPoolRegisterEvent =
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link poolAbi}__ and `eventName` set to `"Reject"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link poolAbi}__ and `eventName` set to `"Review"`
  */
-export const useWatchPoolRejectEvent =
+export const useWatchPoolReviewEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: poolAbi,
-    eventName: 'Reject',
+    eventName: 'Review',
   })
 
 /**

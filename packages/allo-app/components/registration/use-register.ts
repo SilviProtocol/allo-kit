@@ -4,8 +4,8 @@ import { useMutation } from "@tanstack/react-query";
 import { Address, Hex } from "viem";
 import {
   poolAbi,
-  useWritePoolApprove,
   useWritePoolRegister,
+  useWritePoolReview,
 } from "~/generated/wagmi";
 import { extractErrorReason } from "~/lib/extract-error";
 import { Registration } from "~/schemas";
@@ -39,27 +39,27 @@ export function useRegister({ strategyAddress }: { strategyAddress: Address }) {
 }
 
 // Approve Project or Application
-// calls Registry.approve
-export function useRegistryApprove({
+// calls Registry.review
+export function useRegistryReview({
   strategyAddress,
 }: {
   strategyAddress: Address;
 }) {
-  const approve = useWritePoolApprove({});
+  const review = useWritePoolReview({});
 
   const waitFor = useWaitForEvent(poolAbi);
 
   return useMutation({
-    mutationFn: async (args: [Address, string, Hex]) => {
-      const hash = await approve.writeContractAsync(
+    mutationFn: async (args: [Address, number, string, Hex]) => {
+      const hash = await review.writeContractAsync(
         { address: strategyAddress, args },
         {
-          onSuccess: () => toast.success("Registration approved!"),
+          onSuccess: () => toast.success("Registration reviewed!"),
           onError: (error) =>
-            toast.error(extractErrorReason(String(error)) ?? "Approve error"),
+            toast.error(extractErrorReason(String(error)) ?? "Review error"),
         }
       );
-      return waitFor(hash, "Approve");
+      return waitFor(hash, "Review");
     },
   });
 }

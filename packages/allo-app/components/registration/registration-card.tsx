@@ -36,7 +36,7 @@ export function RegistrationCard({
       )}
     >
       <div className="absolute flex gap-1 items-center top-2 left-2">
-        {/* <ApprovedBadge isApproved={project?.isApproved} /> */}
+        {/* <ApprovedBadge status={project?.status} /> */}
         {/* <NetworkBadge chainId={project?.chainId} /> */}
       </div>
       <Button

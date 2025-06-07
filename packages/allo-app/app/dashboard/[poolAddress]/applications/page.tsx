@@ -4,11 +4,9 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Address } from "viem";
 import { Page } from "~/components/page";
-import { ApplicationsList } from "~/components/registration/applications-list";
 import { Button } from "~/components/ui/button";
 import { ApplicationsTable } from "~/components/registration/applications-table";
-import { ApproveItem } from "~/components/registration/approve-item";
-import { RegistrationApproveButton } from "~/components/registration/approve-button";
+import { RegistrationReviewButton } from "~/components/registration/approve-button";
 
 export default function DashboardApplicationsPage() {
   const { poolAddress } = useParams();
@@ -22,10 +20,9 @@ export default function DashboardApplicationsPage() {
         }}
         renderLink={(registration) => (
           <div className="flex justify-end">
-            <RegistrationApproveButton id={registration.id} />
+            <RegistrationReviewButton id={registration.id} />
             <Link
-              href="#"
-              // href={`/dashboard/${poolAddress}/applications/${registration.id}`}
+              href={`/app/pools/${poolAddress}/registrations/${registration.address}`}
             >
               <Button variant="link" iconRight={ArrowRight}>
                 View

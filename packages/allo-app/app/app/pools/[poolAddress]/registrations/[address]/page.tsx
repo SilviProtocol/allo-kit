@@ -57,8 +57,7 @@ export default function RegistrationDetailsPage() {
     <Page
       title={
         <div className="flex gap-2 items-center">
-          {project?.metadata?.title!}{" "}
-          <ApprovedBadge isApproved={project?.isApproved} />
+          {project?.metadata?.title!} <ApprovedBadge status={project?.status} />
         </div>
       }
       actions={

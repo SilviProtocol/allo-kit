@@ -13,7 +13,7 @@ export default function RegistrationApprovePage() {
           limit: 100,
           where: {
             strategy_in: [SimpleGrants?.address],
-            // isApproved: false,
+            // status_in: ["pending"],
           },
         }}
       />

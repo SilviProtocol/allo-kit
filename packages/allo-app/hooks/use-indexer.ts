@@ -11,7 +11,7 @@ export type RegistrationWhere = {
   id?: Hex;
   address_in?: Address[];
   strategy_in?: Address[];
-  isApproved?: boolean;
+  status_in?: ("approved" | "rejected" | "pending")[];
   pool_in?: Address[];
   chainId_in?: number[];
 };

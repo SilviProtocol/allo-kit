@@ -13,7 +13,6 @@ import {
   rainbowWallet,
   coinbaseWallet,
   metaMaskWallet,
-  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
 import { rainbowkitBurnerWallet } from "burner-connector";

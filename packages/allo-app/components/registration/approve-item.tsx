@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { RegistrationApproveButton } from "~/components/registration/approve-button";
+import { RegistrationReviewButton } from "~/components/registration/approve-button";
 import { cn } from "~/lib/utils";
 import { Registration } from "~/schemas";
 
@@ -21,7 +21,7 @@ export function ApproveItem({
         <Link href={`/project/${address}`}>
           <h3 className="hover:underline">{metadata?.title}</h3>
         </Link>
-        <RegistrationApproveButton id={id} />
+        <RegistrationReviewButton id={id} />
       </div>
     </div>
   );

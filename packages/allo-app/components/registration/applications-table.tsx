@@ -79,9 +79,7 @@ export function ApplicationsTable({
       {
         accessorKey: "status",
         header: "Status",
-        cell: ({ row }) => (
-          <ApprovedBadge isApproved={row.original.isApproved} />
-        ),
+        cell: ({ row }) => <ApprovedBadge status={row.original.status} />,
       },
       ...(renderLink
         ? ([

@@ -1,7 +1,7 @@
 import { Address, Hex } from "viem";
 
 export type Registration = {
-  id: string;
+  id: Hex;
   chainId: number;
   index: number;
   address: Address;
@@ -13,7 +13,7 @@ export type Registration = {
   allocations?: { items: Allocation[] };
   strategy: { address: Address; name: string };
   pool: { address: Address; name: string };
-  isApproved: boolean;
+  status: "approved" | "rejected" | "pending";
   createdAt: Date;
   updatedAt: Date;
 };

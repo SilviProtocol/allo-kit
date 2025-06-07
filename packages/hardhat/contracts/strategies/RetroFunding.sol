@@ -26,35 +26,18 @@ contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
         }
     }
 
-    // constructor(PoolConfig memory _config) Pool(_config) {
-    //     config = _config;
-
-    // _grantRole(DEFAULT_ADMIN_ROLE, config.owner);
-    // for (uint256 i = 0; i < config.admins.length; i++) {
-    //     _grantRole(DEFAULT_ADMIN_ROLE, config.admins[i]);
-    // }
-    // }
-
     // MetadataURI contain details about project application
     function register(address project, string memory _metadataURI, bytes memory data) external {
         _register(project, _metadataURI, data);
     }
 
-    function reject(
+    function review(
         address project,
+        uint8 status,
         string memory _metadataURI,
         bytes memory data
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _reject(project, _metadataURI, data);
-    }
-
-    // MetadataURI can contain Review information
-    function approve(
-        address project,
-        string memory _metadataURI,
-        bytes memory data
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _approve(project, _metadataURI, data);
+        _review(project, status, _metadataURI, data);
     }
 
     function update(address project, string memory _metadataURI, bytes memory data) external {
@@ -93,7 +76,7 @@ contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
 
         if (token == config.distributionToken) {
             uint256 balance = IERC20(token).balanceOf(address(this));
-            require(config.maxAmount == 0 || amount + balance <= config.maxAmount  , "Max amount reached");
+            require(config.maxAmount == 0 || amount + balance <= config.maxAmount, "Max amount reached");
         }
     }
 

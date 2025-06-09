@@ -12,7 +12,6 @@ export function RegistrationReviewButton({ id }: { id: Hex }) {
   const review = useRegistryReview(registration?.pool?.address!);
 
   if (isPending) return null;
-
   function handleReview(status: number) {
     const reviewMetadataIpfs = "";
     review

@@ -22,7 +22,7 @@ function AddToCartButton({ id }: { id: string }) {
   return (
     <Button
       onClick={() => {
-        cart.set(id, cart.items[id] || 1n);
+        cart.set(id, cart.items[id] || 1);
         router.push(`/app/pools/${poolAddress}/checkout`);
       }}
     >

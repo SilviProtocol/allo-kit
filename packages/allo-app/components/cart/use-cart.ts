@@ -4,7 +4,7 @@ import { Address, getAddress, parseUnits } from "viem";
 import { createGlobalState } from "~/hooks/use-global-state";
 import { Registration } from "~/schemas";
 
-type CartItem = Record<string, bigint | undefined>;
+type CartItem = Record<string, number | undefined>;
 const useCartState = createGlobalState<CartItem>(
   JSON.parse(global.localStorage?.getItem("cart") ?? "{}")
 );
@@ -14,7 +14,7 @@ export function useCart() {
   const [items, setCart] = useCartState();
 
   // Update or remove an item in the cart (undefined removes)
-  const set = (id: string, allocation?: bigint) =>
+  const set = (id: string, allocation?: number) =>
     setCart((state) => ({ ...state, [id]: allocation }));
 
   const remove = (id: string) => {

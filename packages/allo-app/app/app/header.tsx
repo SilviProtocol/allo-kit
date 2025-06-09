@@ -7,6 +7,7 @@ import { FaucetButton } from "~/components/faucet-button";
 import { Logo } from "~/components/logo";
 import { NavLink } from "~/components/nav-link";
 import { Input } from "~/components/ui/input";
+import { NetworkSelector } from "~/components/network-selector";
 
 export function Header() {
   const params = useParams();
@@ -39,8 +40,8 @@ export function Header() {
               <Button icon={ShoppingBag} variant={"ghost"} size="icon" />
             </Link>
           </div> */}
-          {/* <NetworkSelector /> */}
           <NavLink href="/app/profile">Profile</NavLink>
+          <NetworkSelector />
           <ConnectButton />
           <FaucetButton />
         </div>

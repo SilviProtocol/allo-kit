@@ -2,21 +2,16 @@
 
 pragma solidity ^0.8.20;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-import { Pool, PoolConfig } from "../Pool.sol";
+import {Pool, PoolConfig} from "../Pool.sol";
 
 contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
-    constructor(string memory _name, string memory _schema, PoolConfig memory _config) Pool(_name, _schema, _config) {
-        _grantRole(DEFAULT_ADMIN_ROLE, config.owner);
-        for (uint256 i = 0; i < config.admins.length; i++) {
-            _grantRole(DEFAULT_ADMIN_ROLE, config.admins[i]);
-        }
-    }
+    constructor(string memory _name, string memory _schema, PoolConfig memory _config) Pool(_name, _schema, _config) {}
 
     function initialize(PoolConfig memory _config, bytes calldata data) public override {
         // super.initialize(_config, data);
@@ -31,12 +26,10 @@ contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
         _register(project, _metadataURI, data);
     }
 
-    function review(
-        address project,
-        uint8 status,
-        string memory _metadataURI,
-        bytes memory data
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function review(address project, uint8 status, string memory _metadataURI, bytes memory data)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         _review(project, status, _metadataURI, data);
     }
 
@@ -44,12 +37,10 @@ contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
         _update(project, _metadataURI, data);
     }
 
-    function allocate(
-        address[] memory recipients,
-        uint256[] memory amounts,
-        address token,
-        bytes[] memory data
-    ) external nonReentrant {
+    function allocate(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
+        external
+        nonReentrant
+    {
         require(
             token == config.allocationToken || token == config.distributionToken,
             "Allocations to projects must be allocation or distribution token"
@@ -58,12 +49,11 @@ contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
         _allocate(recipients, amounts, token, data);
     }
 
-    function distribute(
-        address[] memory recipients,
-        uint256[] memory amounts,
-        address token,
-        bytes[] memory data
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
+    function distribute(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        nonReentrant
+    {
         require(token == config.distributionToken, "Distributions must be distribution token");
         _distribute(recipients, amounts, token, data);
     }

@@ -20,6 +20,7 @@ import { BalanceCheck } from "~/components/token/balance-check";
 import { ImageUpload } from "~/components/image-upload";
 import { RegistrationSchema } from "./schemas";
 import { useRegister } from "./use-register";
+import { ImportProject } from "./import-project";
 
 export function RegistrationForm({
   poolAddress,
@@ -50,13 +51,11 @@ export function RegistrationForm({
             .then(onSuccess);
         })}
       >
-        {/* <div className="flex justify-center">
+        <div className="flex justify-center">
           <ImportProject
             onSelect={(project) => {
               console.log("project", project);
-              form.setValue("metadata.title", project.name);
-              form.setValue("metadata.description", project.description);
-              form.setValue("metadata.image", project.bannerImg);
+              form.setValue("metadata", project.metadata);
             }}
           />
         </div>
@@ -64,7 +63,7 @@ export function RegistrationForm({
           <div className="w-full h-px bg-gray-200" />
           <span className="text-sm text-gray-500">or</span>
           <div className="w-full h-px bg-gray-200" />
-        </div> */}
+        </div>
         <FormField
           control={form.control}
           name="metadata.title"

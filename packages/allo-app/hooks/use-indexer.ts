@@ -93,7 +93,7 @@ export function useIndexer<T extends { createdAt?: Date; updatedAt?: Date }>({
     },
     select: (data) => ({
       ...data,
-      items: data.items.map((item) => ({
+      items: data?.items?.map((item) => ({
         ...item,
         createdAt: item.createdAt
           ? new Date(Number(item.createdAt))

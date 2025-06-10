@@ -1,0 +1,68 @@
+# Architecture
+
+The AlloKit architecture is centered around a Pool contract.
+This Pool contract is intended to be as minimal and expressive as possible and to cover as many use-cases as possible.
+
+This contract does the following:
+
+- registering and updating of applications with metadata
+- reviewing (approve, reject) of applications (with optional metadata)
+- allocation of tokens from sender to addresses (voting, donations, pool funding, ...)
+- distribution of tokens from pool contract to addresses (matching funds)
+
+- centered around a Pool
+  - handles registration and review of projects
+  - handles token transfers to and from projects and the pool contract itself
+
+```solidity
+interface IPool {
+    event Deployed(string name, address indexed owner, string schema, PoolConfig config);
+    event Allocate(address indexed from, address indexed to, uint256 amount, address token, bytes data);
+    event Register(address indexed project, address indexed owner, string metadataURI, bytes data);
+    event Review(address indexed project, uint8 status, address indexed approver, string metadataURI, bytes data);
+    event Update(address indexed project, address indexed updater, string metadataURI, bytes data);
+    event Configure(address indexed updater, PoolConfig config);
+
+    function initialize(PoolConfig memory config, bytes memory data) external;
+    function _configure(address updater, PoolConfig memory config) external;
+    function _register(address project, string memory metadataURI, bytes memory data) external;
+    function _update(address project, string memory metadataURI, bytes memory data) external;
+    function _review(address project, uint8 status, string memory metadataURI, bytes memory data) external;
+    function _allocate(
+        address[] memory recipients,
+        uint256[] memory amounts,
+        address token,
+        bytes[] memory data
+    ) external;
+    function _distribute(
+        address[] memory recipients,
+        uint256[] memory amounts,
+        address token,
+        bytes[] memory data
+    ) external;
+}
+```
+
+Registering a Project
+
+- `register(projectAddress, projectMetadata)`
+
+Reviewing a Project
+
+- `review(poolAddress, projectAddress, status, reviewMetadata)`
+
+Funding a Pool
+
+- `allocate([poolAddress], [fundingAmount], token)`
+
+Funding Projects
+
+- `allocate([projectA, projectB], [amountA, amountB], token)`
+
+Distributing tokens from Pool
+
+- `distribute([projectA, projectB], [amountA, amountB], token)`
+
+```
+
+```

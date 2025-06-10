@@ -1,6 +1,7 @@
 export default {
   index: "",
   "get-started": "",
+  architecture: "",
   contracts: {
     title: "Strategy Contracts",
     theme: {

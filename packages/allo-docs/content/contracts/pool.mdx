@@ -1,25 +1,40 @@
-# Strategy
-
+# Pool
 
 The base contract to extend when creating strategies. At this point it only does two things:
+
 - Emits an `Initialized` event when deployed. This is picked up by the indexer.
 - Contains a `strategyName` property.
 
-
 ```solidity
-interface IStrategy {}
-contract Strategy is IStrategy {
-    string public strategyName;
-    event Initialize(string strategyName);
 
-    constructor(string memory _name) {
-        strategyName = _name;
-        emit Initialize(strategyName);
-    }
+interface IPool {
+
+    event Deployed(string name, address indexed owner, string schema, PoolConfig config);
+    event Allocate(address indexed from, address indexed to, uint256 amount, address token, bytes data);
+    event Register(address indexed project, address indexed owner, string metadataURI, bytes data);
+    event Review(address indexed project, uint8 status, address indexed approver, string metadataURI, bytes data);
+    event Update(address indexed project, address indexed updater, string metadataURI, bytes data);
+    event Configure(address indexed updater, PoolConfig config);
+
+    function initialize(PoolConfig memory config, bytes memory data) external;
+    function _configure(address updater, PoolConfig memory config) external;
+    function _register(address project, string memory metadataURI, bytes memory data) external;
+    function _update(address project, string memory metadataURI, bytes memory data) external;
+    function _review(address project, uint8 status, string memory metadataURI, bytes memory data) external;
+    function _allocate(
+        address[] memory recipients,
+        uint256[] memory amounts,
+        address token,
+        bytes[] memory data
+    ) external;
+    function _distribute(
+        address[] memory recipients,
+        uint256[] memory amounts,
+        address token,
+        bytes[] memory data
+    ) external;
 }
-
 ```
-
 
 **Indexer GraphQL Query**
 
@@ -44,7 +59,7 @@ contract Strategy is IStrategy {
                     updatedAt
 
                     # Token transfers to this project
-                    allocations { 
+                    allocations {
                         items {
                             # See Allocations query
                         }
@@ -66,7 +81,7 @@ contract Strategy is IStrategy {
                     }
                 }
             }
-            
+
         }
     }
 }

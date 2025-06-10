@@ -1,5 +1,8 @@
 import { onchainTable, relations } from "ponder";
 
+export type Metadata = { name: string; description: string; image?: string };
+export type Token = { address: string; symbol: string; decimals: number };
+
 export const strategy = onchainTable("strategy", (t) => ({
   chainId: t.integer().notNull(),
   address: t.hex().primaryKey(),
@@ -7,14 +10,15 @@ export const strategy = onchainTable("strategy", (t) => ({
   name: t.text(),
   schema: t.text(),
   metadataURI: t.text(),
-  metadata: t.json(),
+  metadata: t.json().$type<Metadata>(),
   createdAt: t.bigint().notNull(),
   updatedAt: t.bigint().notNull(),
 }));
 
 export const pool = onchainTable("pool", (t) => ({
+  id: t.text().primaryKey(),
   chainId: t.integer().notNull(),
-  address: t.hex().primaryKey(),
+  address: t.hex().notNull(),
   owner: t.hex().notNull(),
   strategy: t.hex().notNull(),
   metadataURI: t.text(),
@@ -23,7 +27,7 @@ export const pool = onchainTable("pool", (t) => ({
   admins: t.text().array(),
   maxAmount: t.bigint().notNull(),
   timestamps: t.bigint().array(),
-  metadata: t.json(),
+  metadata: t.json().$type<Metadata>(),
   createdAt: t.bigint().notNull(),
   updatedAt: t.bigint().notNull(),
 }));
@@ -38,8 +42,8 @@ export const registration = onchainTable("registration", (t) => ({
   pool: t.hex().notNull(),
   data: t.hex().notNull(),
   metadataURI: t.text().notNull(),
-  metadata: t.json(),
-  review: t.json(),
+  metadata: t.json().$type<Metadata>(),
+  review: t.json().$type<Metadata>(),
   status: t.text().notNull(),
   createdAt: t.bigint().notNull(),
   updatedAt: t.bigint().notNull(),
@@ -55,7 +59,7 @@ export const allocation = onchainTable("allocation", (t) => ({
   amount: t.bigint().notNull(),
   amountInUSD: t.bigint().notNull(),
   tokenAddress: t.hex().notNull(),
-  token: t.json(),
+  token: t.json().$type<Token>(),
   createdAt: t.bigint().notNull(),
 }));
 

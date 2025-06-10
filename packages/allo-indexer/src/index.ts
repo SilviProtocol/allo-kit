@@ -3,6 +3,7 @@ import schemas from "ponder:schema";
 import { Address, erc20Abi, Hex, zeroAddress, getAddress } from "viem";
 import pRetry from "p-retry";
 import { cachedFetchWithRetry } from "./lib/fetch";
+import { Metadata } from "../ponder.schema";
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 const PINATA_GATEWAY_URL = process.env.PINATA_GATEWAY_URL;
@@ -34,6 +35,7 @@ ponder.on("PoolFactory:Created", async ({ event, context }) => {
   await context.db
     .insert(schemas.pool)
     .values({
+      id: [chainId, pool].join("_"),
       address: pool,
       owner,
       // name,
@@ -156,16 +158,16 @@ ponder.on("Pool:Allocate", async ({ event, context }) => {
 const registrationId = (event: Event, chainId: number) =>
   `${event.args.project}_${event.log.address}_${chainId}` as Hex;
 
-async function fetchMetadata(cid: string) {
+async function fetchMetadata(cid: string): Promise<Metadata> {
   console.log("Fetching metadata for:", cid);
   return cid
-    ? cachedFetchWithRetry(
+    ? cachedFetchWithRetry<Metadata>(
         `https://${PINATA_GATEWAY_URL}/ipfs/${cid}?pinataGatewayToken=${PINATA_GATEWAY_KEY}`
       ).catch((err) => {
         console.log("fetchMetadata error:", err);
-        return {};
+        return {} as Metadata;
       })
-    : {};
+    : ({} as Metadata);
 }
 
 async function fetchToken(address: Address, client: Context["client"]) {

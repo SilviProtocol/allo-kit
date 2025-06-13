@@ -51,19 +51,6 @@ export class AlloKitSDK {
     });
   }
 
-  async initializePool(
-    pool: Address,
-    config: PoolConfig,
-    data: Hex = "0x"
-  ): Promise<void> {
-    await this.#executeTransaction({
-      abi: this.#pool.abi,
-      address: pool,
-      functionName: "initialize",
-      args: [config, data],
-    });
-  }
-
   async register(
     pool: Address,
     project: Address,

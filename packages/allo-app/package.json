@@ -1,6 +1,6 @@
 {
   "name": "@allo-kit/allo-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -10,7 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@allo-kit/sdk": "0.1.0",
+    "@allo-kit/sdk": "0.1.1",
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-accordion": "^1.2.10",
     "@radix-ui/react-alert-dialog": "^1.1.13",

@@ -697,16 +697,49 @@ const deployedContracts = {
               type: "bytes[]",
             },
           ],
-          name: "_allocate",
+          name: "allocate",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "config",
+          outputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "allocationToken",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "distributionToken",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "maxAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
           inputs: [
             {
               internalType: "address",
-              name: "_updater",
+              name: "updater",
               type: "address",
             },
             {
@@ -752,7 +785,7 @@ const deployedContracts = {
               type: "tuple",
             },
           ],
-          name: "_configure",
+          name: "configure",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -780,116 +813,9 @@ const deployedContracts = {
               type: "bytes[]",
             },
           ],
-          name: "_distribute",
+          name: "distribute",
           outputs: [],
           stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_register",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "uint8",
-              name: "status",
-              type: "uint8",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_review",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_update",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "config",
-          outputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "allocationToken",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "distributionToken",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "maxAmount",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "metadataURI",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
           type: "function",
         },
         {
@@ -951,6 +877,29 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "address",
+              name: "project",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
+            },
+            {
+              internalType: "bytes",
+              name: "data",
+              type: "bytes",
+            },
+          ],
+          name: "register",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
               name: "",
               type: "address",
             },
@@ -979,6 +928,57 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "project",
+              type: "address",
+            },
+            {
+              internalType: "uint8",
+              name: "status",
+              type: "uint8",
+            },
+            {
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
+            },
+            {
+              internalType: "bytes",
+              name: "data",
+              type: "bytes",
+            },
+          ],
+          name: "review",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "project",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
+            },
+            {
+              internalType: "bytes",
+              name: "data",
+              type: "bytes",
+            },
+          ],
+          name: "update",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
       ],
@@ -1581,16 +1581,49 @@ const deployedContracts = {
               type: "bytes[]",
             },
           ],
-          name: "_allocate",
+          name: "allocate",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "config",
+          outputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "allocationToken",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "distributionToken",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "maxAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
           inputs: [
             {
               internalType: "address",
-              name: "_updater",
+              name: "updater",
               type: "address",
             },
             {
@@ -1636,172 +1669,9 @@ const deployedContracts = {
               type: "tuple",
             },
           ],
-          name: "_configure",
+          name: "configure",
           outputs: [],
           stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address[]",
-              name: "recipients",
-              type: "address[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "amounts",
-              type: "uint256[]",
-            },
-            {
-              internalType: "address",
-              name: "token",
-              type: "address",
-            },
-            {
-              internalType: "bytes[]",
-              name: "data",
-              type: "bytes[]",
-            },
-          ],
-          name: "_distribute",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_register",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "uint8",
-              name: "status",
-              type: "uint8",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_review",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_update",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address[]",
-              name: "recipients",
-              type: "address[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "amounts",
-              type: "uint256[]",
-            },
-            {
-              internalType: "address",
-              name: "token",
-              type: "address",
-            },
-            {
-              internalType: "bytes[]",
-              name: "data",
-              type: "bytes[]",
-            },
-          ],
-          name: "allocate",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "config",
-          outputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "allocationToken",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "distributionToken",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "maxAmount",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "metadataURI",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
           type: "function",
         },
         {
@@ -2113,15 +1983,15 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        _allocate: "contracts/Pool.sol",
-        _configure: "contracts/Pool.sol",
-        _distribute: "contracts/Pool.sol",
-        _register: "contracts/Pool.sol",
-        _review: "contracts/Pool.sol",
-        _update: "contracts/Pool.sol",
+        allocate: "contracts/Pool.sol",
         config: "contracts/Pool.sol",
+        configure: "contracts/Pool.sol",
+        distribute: "contracts/Pool.sol",
         initialize: "contracts/Pool.sol",
+        register: "contracts/Pool.sol",
         registrations: "contracts/Pool.sol",
+        review: "contracts/Pool.sol",
+        update: "contracts/Pool.sol",
         DEFAULT_ADMIN_ROLE: "@openzeppelin/contracts/access/AccessControl.sol",
         getRoleAdmin: "@openzeppelin/contracts/access/AccessControl.sol",
         grantRole: "@openzeppelin/contracts/access/AccessControl.sol",
@@ -4240,15 +4110,15 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {
-        _allocate: "contracts/Pool.sol",
-        _configure: "contracts/Pool.sol",
-        _distribute: "contracts/Pool.sol",
-        _register: "contracts/Pool.sol",
-        _review: "contracts/Pool.sol",
-        _update: "contracts/Pool.sol",
+        allocate: "contracts/Pool.sol",
         config: "contracts/Pool.sol",
+        configure: "contracts/Pool.sol",
+        distribute: "contracts/Pool.sol",
         initialize: "contracts/Pool.sol",
+        register: "contracts/Pool.sol",
         registrations: "contracts/Pool.sol",
+        review: "contracts/Pool.sol",
+        update: "contracts/Pool.sol",
         DEFAULT_ADMIN_ROLE: "@openzeppelin/contracts/access/AccessControl.sol",
         getRoleAdmin: "@openzeppelin/contracts/access/AccessControl.sol",
         grantRole: "@openzeppelin/contracts/access/AccessControl.sol",

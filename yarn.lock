@@ -6638,7 +6638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/bun@latest":
+"@types/bun@npm:latest":
   version: 1.2.16
   resolution: "@types/bun@npm:1.2.16"
   dependencies:
@@ -25731,9 +25731,9 @@ __metadata:
   linkType: hard
 
 "zod@npm:^3.22.2, zod@npm:^3.22.3, zod@npm:^3.24.4":
-  version: 3.25.63
-  resolution: "zod@npm:3.25.63"
-  checksum: 053c579277198c89720dd41070263ee92455e5d86e19dbb2040c835835f874e2482293118a6d581afe6db962c778cd5ecfb8014d90dc4bca6cc008cba37442f6
+  version: 3.25.64
+  resolution: "zod@npm:3.25.64"
+  checksum: 9f0e86430ed52ef56930712485573454f9b8d64697e24e3139581489520993658d2dee5e939e9e820c1c720afa202fdca58a3ef096f8d91b0d04eb4285bc00ca
   languageName: node
   linkType: hard
 

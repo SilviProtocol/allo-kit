@@ -45,7 +45,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/allocapital/allo-kit-qf.git"
+    "url": "https://github.com/allocapital/allo-kit.git"
   },
   "author": "Carl Barrdahl",
   "license": "MIT"

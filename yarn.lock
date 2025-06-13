@@ -42,7 +42,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@allo-kit/allo-app@workspace:packages/allo-app"
   dependencies:
-    "@allo-kit/sdk": 0.1.0
+    "@allo-kit/sdk": 0.1.1
     "@eslint/eslintrc": ^3.3.1
     "@hookform/resolvers": ^5.0.1
     "@radix-ui/react-accordion": ^1.2.10
@@ -215,7 +215,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@allo-kit/sdk@0.1.0, @allo-kit/sdk@workspace:packages/sdk":
+"@allo-kit/sdk@0.1.1, @allo-kit/sdk@workspace:packages/sdk":
   version: 0.0.0-use.local
   resolution: "@allo-kit/sdk@workspace:packages/sdk"
   dependencies:

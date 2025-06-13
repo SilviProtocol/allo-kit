@@ -20,8 +20,7 @@
     ],
     "paths": {
       "~/*": ["./*"],
-      "~~/*": ["./*"],
-      "@se-2/sdk": ["../../packages/sdk/dist/index.js"]
+      "~~/*": ["./*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

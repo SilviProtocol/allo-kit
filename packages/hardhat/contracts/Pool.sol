@@ -27,7 +27,7 @@ interface IPool {
         bytes data; // Data can contain information that can be accessed later
     }
 
-    event Deployed(string name, address indexed owner, string schema, PoolConfig config);
+    event Deployed(string name, address indexed owner, string schema, string metadataURI);
     event Allocate(address indexed from, address indexed to, uint256 amount, address token, bytes data);
     event Register(address indexed project, address indexed owner, string metadataURI, bytes data);
     event Review(address indexed project, uint8 status, address indexed approver, string metadataURI, bytes data);
@@ -61,9 +61,9 @@ contract Pool is IPool {
 
     mapping(address => Registration) public registrations;
 
-    constructor(string memory _name, string memory _schema, PoolConfig memory _config) {
+    constructor(string memory _name, string memory _schema, string memory _metadataURI) {
         // Emit an event for the Indexer so Pools can be created with this Strategy
-        emit Deployed(_name, msg.sender, _schema, _config);
+        emit Deployed(_name, msg.sender, _schema, _metadataURI);
     }
 
     function initialize(PoolConfig memory _config, bytes memory) public virtual {

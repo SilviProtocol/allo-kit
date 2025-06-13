@@ -369,46 +369,9 @@ const deployedContracts = {
               type: "string",
             },
             {
-              components: [
-                {
-                  internalType: "address",
-                  name: "owner",
-                  type: "address",
-                },
-                {
-                  internalType: "address[]",
-                  name: "admins",
-                  type: "address[]",
-                },
-                {
-                  internalType: "address",
-                  name: "allocationToken",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "distributionToken",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "maxAmount",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint64[]",
-                  name: "timestamps",
-                  type: "uint64[]",
-                },
-                {
-                  internalType: "string",
-                  name: "metadataURI",
-                  type: "string",
-                },
-              ],
-              internalType: "struct PoolConfig",
-              name: "_config",
-              type: "tuple",
+              internalType: "string",
+              name: "_metadataURI",
+              type: "string",
             },
           ],
           stateMutability: "nonpayable",
@@ -529,47 +492,10 @@ const deployedContracts = {
               type: "string",
             },
             {
-              components: [
-                {
-                  internalType: "address",
-                  name: "owner",
-                  type: "address",
-                },
-                {
-                  internalType: "address[]",
-                  name: "admins",
-                  type: "address[]",
-                },
-                {
-                  internalType: "address",
-                  name: "allocationToken",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "distributionToken",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "maxAmount",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint64[]",
-                  name: "timestamps",
-                  type: "uint64[]",
-                },
-                {
-                  internalType: "string",
-                  name: "metadataURI",
-                  type: "string",
-                },
-              ],
               indexed: false,
-              internalType: "struct PoolConfig",
-              name: "config",
-              type: "tuple",
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
             },
           ],
           name: "Deployed",
@@ -1139,46 +1065,9 @@ const deployedContracts = {
               type: "string",
             },
             {
-              components: [
-                {
-                  internalType: "address",
-                  name: "owner",
-                  type: "address",
-                },
-                {
-                  internalType: "address[]",
-                  name: "admins",
-                  type: "address[]",
-                },
-                {
-                  internalType: "address",
-                  name: "allocationToken",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "distributionToken",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "maxAmount",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint64[]",
-                  name: "timestamps",
-                  type: "uint64[]",
-                },
-                {
-                  internalType: "string",
-                  name: "metadataURI",
-                  type: "string",
-                },
-              ],
-              internalType: "struct PoolConfig",
-              name: "_config",
-              type: "tuple",
+              internalType: "string",
+              name: "_metadataURI",
+              type: "string",
             },
           ],
           stateMutability: "nonpayable",
@@ -1325,47 +1214,10 @@ const deployedContracts = {
               type: "string",
             },
             {
-              components: [
-                {
-                  internalType: "address",
-                  name: "owner",
-                  type: "address",
-                },
-                {
-                  internalType: "address[]",
-                  name: "admins",
-                  type: "address[]",
-                },
-                {
-                  internalType: "address",
-                  name: "allocationToken",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "distributionToken",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "maxAmount",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint64[]",
-                  name: "timestamps",
-                  type: "uint64[]",
-                },
-                {
-                  internalType: "string",
-                  name: "metadataURI",
-                  type: "string",
-                },
-              ],
               indexed: false,
-              internalType: "struct PoolConfig",
-              name: "config",
-              type: "tuple",
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
             },
           ],
           name: "Deployed",
@@ -2351,7 +2203,7 @@ const deployedContracts = {
       },
     },
     Pool: {
-      address: "0x5b86c5e6e56B305D0A83a729d01AB0Cb4D1cf036",
+      address: "0x0c523c801EbB0023F9d6D39244EB05ec3DC61b9d",
       abi: [
         {
           inputs: [
@@ -2366,46 +2218,9 @@ const deployedContracts = {
               type: "string",
             },
             {
-              components: [
-                {
-                  internalType: "address",
-                  name: "owner",
-                  type: "address",
-                },
-                {
-                  internalType: "address[]",
-                  name: "admins",
-                  type: "address[]",
-                },
-                {
-                  internalType: "address",
-                  name: "allocationToken",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "distributionToken",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "maxAmount",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint64[]",
-                  name: "timestamps",
-                  type: "uint64[]",
-                },
-                {
-                  internalType: "string",
-                  name: "metadataURI",
-                  type: "string",
-                },
-              ],
-              internalType: "struct PoolConfig",
-              name: "_config",
-              type: "tuple",
+              internalType: "string",
+              name: "_metadataURI",
+              type: "string",
             },
           ],
           stateMutability: "nonpayable",
@@ -2526,47 +2341,10 @@ const deployedContracts = {
               type: "string",
             },
             {
-              components: [
-                {
-                  internalType: "address",
-                  name: "owner",
-                  type: "address",
-                },
-                {
-                  internalType: "address[]",
-                  name: "admins",
-                  type: "address[]",
-                },
-                {
-                  internalType: "address",
-                  name: "allocationToken",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "distributionToken",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "maxAmount",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint64[]",
-                  name: "timestamps",
-                  type: "uint64[]",
-                },
-                {
-                  internalType: "string",
-                  name: "metadataURI",
-                  type: "string",
-                },
-              ],
               indexed: false,
-              internalType: "struct PoolConfig",
-              name: "config",
-              type: "tuple",
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
             },
           ],
           name: "Deployed",
@@ -2694,16 +2472,49 @@ const deployedContracts = {
               type: "bytes[]",
             },
           ],
-          name: "_allocate",
+          name: "allocate",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "config",
+          outputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "allocationToken",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "distributionToken",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "maxAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
           inputs: [
             {
               internalType: "address",
-              name: "_updater",
+              name: "updater",
               type: "address",
             },
             {
@@ -2749,7 +2560,7 @@ const deployedContracts = {
               type: "tuple",
             },
           ],
-          name: "_configure",
+          name: "configure",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -2777,116 +2588,9 @@ const deployedContracts = {
               type: "bytes[]",
             },
           ],
-          name: "_distribute",
+          name: "distribute",
           outputs: [],
           stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_register",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "uint8",
-              name: "status",
-              type: "uint8",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_review",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_update",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "config",
-          outputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "allocationToken",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "distributionToken",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "maxAmount",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "metadataURI",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
           type: "function",
         },
         {
@@ -2948,6 +2652,29 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "address",
+              name: "project",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
+            },
+            {
+              internalType: "bytes",
+              name: "data",
+              type: "bytes",
+            },
+          ],
+          name: "register",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
               name: "",
               type: "address",
             },
@@ -2978,11 +2705,62 @@ const deployedContracts = {
           stateMutability: "view",
           type: "function",
         },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "project",
+              type: "address",
+            },
+            {
+              internalType: "uint8",
+              name: "status",
+              type: "uint8",
+            },
+            {
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
+            },
+            {
+              internalType: "bytes",
+              name: "data",
+              type: "bytes",
+            },
+          ],
+          name: "review",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "project",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
+            },
+            {
+              internalType: "bytes",
+              name: "data",
+              type: "bytes",
+            },
+          ],
+          name: "update",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
       ],
       inheritedFunctions: {},
     },
     PoolFactory: {
-      address: "0x00d49735B341F756f7F7d59d9265CafA65Dd779a",
+      address: "0x170D3E71C5503800DA8eDd44EDe55b820A2B0B7B",
       abi: [
         {
           inputs: [],
@@ -3121,7 +2899,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     RetroFunding: {
-      address: "0xEf19a6Eaa6D3822B4Ee94e200B2119F2AB1Dc553",
+      address: "0x1bbeEcfBFd238F860f3b9F2Ec5111bd3ce0946BF",
       abi: [
         {
           inputs: [
@@ -3136,46 +2914,9 @@ const deployedContracts = {
               type: "string",
             },
             {
-              components: [
-                {
-                  internalType: "address",
-                  name: "owner",
-                  type: "address",
-                },
-                {
-                  internalType: "address[]",
-                  name: "admins",
-                  type: "address[]",
-                },
-                {
-                  internalType: "address",
-                  name: "allocationToken",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "distributionToken",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "maxAmount",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint64[]",
-                  name: "timestamps",
-                  type: "uint64[]",
-                },
-                {
-                  internalType: "string",
-                  name: "metadataURI",
-                  type: "string",
-                },
-              ],
-              internalType: "struct PoolConfig",
-              name: "_config",
-              type: "tuple",
+              internalType: "string",
+              name: "_metadataURI",
+              type: "string",
             },
           ],
           stateMutability: "nonpayable",
@@ -3322,47 +3063,10 @@ const deployedContracts = {
               type: "string",
             },
             {
-              components: [
-                {
-                  internalType: "address",
-                  name: "owner",
-                  type: "address",
-                },
-                {
-                  internalType: "address[]",
-                  name: "admins",
-                  type: "address[]",
-                },
-                {
-                  internalType: "address",
-                  name: "allocationToken",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "distributionToken",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "maxAmount",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint64[]",
-                  name: "timestamps",
-                  type: "uint64[]",
-                },
-                {
-                  internalType: "string",
-                  name: "metadataURI",
-                  type: "string",
-                },
-              ],
               indexed: false,
-              internalType: "struct PoolConfig",
-              name: "config",
-              type: "tuple",
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
             },
           ],
           name: "Deployed",
@@ -3578,16 +3282,49 @@ const deployedContracts = {
               type: "bytes[]",
             },
           ],
-          name: "_allocate",
+          name: "allocate",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "config",
+          outputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "allocationToken",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "distributionToken",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "maxAmount",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "metadataURI",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
           inputs: [
             {
               internalType: "address",
-              name: "_updater",
+              name: "updater",
               type: "address",
             },
             {
@@ -3633,172 +3370,9 @@ const deployedContracts = {
               type: "tuple",
             },
           ],
-          name: "_configure",
+          name: "configure",
           outputs: [],
           stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address[]",
-              name: "recipients",
-              type: "address[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "amounts",
-              type: "uint256[]",
-            },
-            {
-              internalType: "address",
-              name: "token",
-              type: "address",
-            },
-            {
-              internalType: "bytes[]",
-              name: "data",
-              type: "bytes[]",
-            },
-          ],
-          name: "_distribute",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_register",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "uint8",
-              name: "status",
-              type: "uint8",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_review",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "project",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "_metadataURI",
-              type: "string",
-            },
-            {
-              internalType: "bytes",
-              name: "data",
-              type: "bytes",
-            },
-          ],
-          name: "_update",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address[]",
-              name: "recipients",
-              type: "address[]",
-            },
-            {
-              internalType: "uint256[]",
-              name: "amounts",
-              type: "uint256[]",
-            },
-            {
-              internalType: "address",
-              name: "token",
-              type: "address",
-            },
-            {
-              internalType: "bytes[]",
-              name: "data",
-              type: "bytes[]",
-            },
-          ],
-          name: "allocate",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "config",
-          outputs: [
-            {
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "allocationToken",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "distributionToken",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "maxAmount",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "metadataURI",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
           type: "function",
         },
         {

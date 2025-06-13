@@ -4,7 +4,7 @@ import path from "path";
 const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: true },
   eslint: { ignoreDuringBuilds: true },
-  transpilePackages: ["@se-2/sdk"],
+  transpilePackages: ["@allo-kit/sdk"],
   devIndicators: false,
   /* config options here */
   webpack: (config) => {

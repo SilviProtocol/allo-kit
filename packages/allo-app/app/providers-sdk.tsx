@@ -1,4 +1,4 @@
-import { AlloKitSDK } from "@se-2/sdk";
+import { AlloKitSDK } from "@allo-kit/sdk";
 import { createContext, PropsWithChildren, useMemo } from "react";
 import { useCurrentChainName } from "~/hooks/use-current-chain";
 

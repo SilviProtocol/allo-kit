@@ -2,61 +2,40 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { Address, Hex } from "viem";
-import {
-  poolAbi,
-  useWritePoolRegister,
-  useWritePoolReview,
-} from "~/generated/wagmi";
 import { extractErrorReason } from "~/lib/extract-error";
 import { Registration } from "~/schemas";
 import { IndexerQuery, useIndexer } from "~/hooks/use-indexer";
-import { useWaitForEvent } from "~/hooks/use-wait-for-event";
 import { toast } from "sonner";
 import { REGISTRATIONS_SCHEMA } from "./queries";
+import { useAlloKitSDK } from "~/app/providers-sdk";
 
 // Register a Project or Application
 // calls contract Registry.register
 export function useRegister(poolAddress: Address) {
-  const register = useWritePoolRegister();
-
-  const waitFor = useWaitForEvent(poolAbi);
-
+  const sdk = useAlloKitSDK();
   return useMutation({
     mutationFn: async (args: [Address, string, Hex]) => {
-      const hash = await register.writeContractAsync(
-        { address: poolAddress, args },
-        {
-          onSuccess: () => toast.success("Project Registered!"),
-          onError: (error) =>
-            toast.error(
-              extractErrorReason(String(error)) ?? "Register Project error"
-            ),
-        }
-      );
-      return waitFor<{ project: string }>(hash, "Register");
+      const [project, metadataURI, data] = args;
+      return sdk?.register(poolAddress, project, metadataURI, data);
     },
+    onSuccess: () => toast.success("Registered!"),
+    onError: (error) =>
+      toast.error(extractErrorReason(String(error)) ?? "Register error"),
   });
 }
 
 // Approve Project or Application
 // calls Registry.review
 export function useRegistryReview(poolAddress: Address) {
-  const review = useWritePoolReview({});
-
-  const waitFor = useWaitForEvent(poolAbi);
-
+  const sdk = useAlloKitSDK();
   return useMutation({
-    mutationFn: async (args: [Address, number, string, Hex]) => {
-      const hash = await review.writeContractAsync(
-        { address: poolAddress, args },
-        {
-          onSuccess: () => toast.success("Registration reviewed!"),
-          onError: (error) =>
-            toast.error(extractErrorReason(String(error)) ?? "Review error"),
-        }
-      );
-      return waitFor(hash, "Review");
+    mutationFn: async (args: [Address, string, 0 | 1 | 2, Hex]) => {
+      const [project, metadataURI, status, data] = args;
+      return sdk?.review(poolAddress, project, status, metadataURI, data);
     },
+    onSuccess: () => toast.success("Reviewed!"),
+    onError: (error) =>
+      toast.error(extractErrorReason(String(error)) ?? "Review error"),
   });
 }
 

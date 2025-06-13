@@ -8,29 +8,21 @@ import { useAccount } from "wagmi";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { useWaitForEvent } from "~/hooks/use-wait-for-event";
 import { extractErrorReason } from "~/lib/extract-error";
-import { useContracts } from "~/hooks/use-contracts";
-import { poolFactoryAbi, useWritePoolFactoryDeploy } from "~/generated/wagmi";
 import { PoolConfig } from "./schemas";
 import { POOLS_SCHEMA } from "./queries";
+import { useAlloKitSDK } from "~/app/providers-sdk";
 
 export function useCreatePool() {
-  const { PoolFactory } = useContracts();
-  const deploy = useWritePoolFactoryDeploy();
-  const waitFor = useWaitForEvent(poolFactoryAbi);
+  const sdk = useAlloKitSDK();
   return useMutation({
     mutationFn: async (args: [Address, PoolConfig, Hex]) => {
-      const hash = await deploy.writeContractAsync(
-        { address: PoolFactory.address, args },
-        {
-          onSuccess: () => toast.success("Created!"),
-          onError: (error) =>
-            toast.error(extractErrorReason(String(error)) ?? "Create error"),
-        }
-      );
-      return waitFor<{ pool: Address }>(hash, "Created");
+      const [address, config, data] = args;
+      return sdk?.deployPool(address, config, data);
     },
+    onSuccess: () => toast.success("Pool created!"),
+    onError: (error) =>
+      toast.error(extractErrorReason(String(error)) ?? "Create error"),
   });
 }
 

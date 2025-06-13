@@ -19,6 +19,7 @@ export const POOLS_SCHEMA = gql`
       where: $where
     ) {
       items {
+        
         chainId
         address
         owner

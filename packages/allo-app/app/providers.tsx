@@ -17,6 +17,8 @@ import {
 
 import { rainbowkitBurnerWallet } from "burner-connector";
 import { chains, defaultChain } from "~/config";
+import { AlloKitSDKProvider } from "./providers-sdk";
+
 export const queryClient = new QueryClient();
 
 const config = getDefaultConfig({
@@ -46,7 +48,7 @@ export function Providers(props: PropsWithChildren) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider initialChain={chains[defaultChain]}>
-          {props.children}
+          <AlloKitSDKProvider>{props.children}</AlloKitSDKProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

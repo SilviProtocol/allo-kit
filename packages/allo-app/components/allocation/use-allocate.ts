@@ -1,11 +1,5 @@
 "use client";
 
-import {
-  poolAbi,
-  useWritePoolAllocate,
-  useWritePoolDistribute,
-} from "~/generated/wagmi";
-import { useWaitForEvent } from "~/hooks/use-wait-for-event";
 import { useMutation } from "@tanstack/react-query";
 import { Address, Hex } from "viem";
 import { extractErrorReason } from "~/lib/extract-error";
@@ -14,46 +8,31 @@ import { useIndexer, IndexerQuery } from "~/hooks/use-indexer";
 import { useAccount } from "wagmi";
 import { Allocation } from "~/schemas";
 import { toast } from "sonner";
+import { useAlloKitSDK } from "~/app/providers-sdk";
 
 export function useAllocate(poolAddress: Address) {
-  const allocate = useWritePoolAllocate({});
-
-  const waitFor = useWaitForEvent(poolAbi);
-
+  const sdk = useAlloKitSDK();
   return useMutation({
     mutationFn: async (args: [Address[], bigint[], Address, Hex[]]) => {
-      const hash = await allocate.writeContractAsync(
-        { address: poolAddress, args },
-        {
-          onSuccess: () => toast.success("Allocated!"),
-          onError: (error) =>
-            toast.error(extractErrorReason(String(error)) ?? "Allocated error"),
-        }
-      );
-      return waitFor(hash, "Allocate");
+      const [recipients, amounts, token, data] = args;
+      return sdk?.allocate(poolAddress, recipients, amounts, token, data);
     },
+    onSuccess: () => toast.success("Allocated!"),
+    onError: (error) =>
+      toast.error(extractErrorReason(String(error)) ?? "Allocated error"),
   });
 }
 
 export function useDistribute(poolAddress: Address) {
-  const distribute = useWritePoolDistribute();
-
-  const waitFor = useWaitForEvent(poolAbi);
-
+  const sdk = useAlloKitSDK();
   return useMutation({
     mutationFn: async (args: [Address[], bigint[], Address, Hex[]]) => {
-      const hash = await distribute.writeContractAsync(
-        { address: poolAddress, args },
-        {
-          onSuccess: () => toast.success("Distributed!"),
-          onError: (error) =>
-            toast.error(
-              extractErrorReason(String(error)) ?? "Distributed error"
-            ),
-        }
-      );
-      return waitFor(hash, "Allocate");
+      const [recipients, amounts, token, data] = args;
+      return sdk?.distribute(poolAddress, recipients, amounts, token, data);
     },
+    onSuccess: () => toast.success("Distributed!"),
+    onError: (error) =>
+      toast.error(extractErrorReason(String(error)) ?? "Distributed error"),
   });
 }
 

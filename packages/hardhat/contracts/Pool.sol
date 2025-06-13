@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 struct PoolConfig {
     address owner;
@@ -35,22 +35,14 @@ interface IPool {
     event Configure(address indexed updater, PoolConfig config);
 
     function initialize(PoolConfig memory config, bytes memory data) external;
-    function _configure(address updater, PoolConfig memory config) external;
-    function _register(address project, string memory metadataURI, bytes memory data) external;
-    function _update(address project, string memory metadataURI, bytes memory data) external;
-    function _review(address project, uint8 status, string memory metadataURI, bytes memory data) external;
-    function _allocate(
-        address[] memory recipients,
-        uint256[] memory amounts,
-        address token,
-        bytes[] memory data
-    ) external;
-    function _distribute(
-        address[] memory recipients,
-        uint256[] memory amounts,
-        address token,
-        bytes[] memory data
-    ) external;
+    function configure(address updater, PoolConfig memory config) external;
+    function register(address project, string memory metadataURI, bytes memory data) external;
+    function update(address project, string memory metadataURI, bytes memory data) external;
+    function review(address project, uint8 status, string memory metadataURI, bytes memory data) external;
+    function allocate(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
+        external;
+    function distribute(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
+        external;
 }
 
 /*
@@ -70,37 +62,39 @@ contract Pool is IPool {
     mapping(address => Registration) public registrations;
 
     constructor(string memory _name, string memory _schema, PoolConfig memory _config) {
+        // Emit an event for the Indexer so Pools can be created with this Strategy
         emit Deployed(_name, msg.sender, _schema, _config);
     }
 
-    function initialize(PoolConfig memory _config, bytes memory) external virtual {
+    function initialize(PoolConfig memory _config, bytes memory) public virtual {
         require(!_initialized, "Already initialized");
         _initialized = true;
         config = _config;
     }
 
-    function _configure(address _updater, PoolConfig memory _config) external virtual {
+    function _configure(address _updater, PoolConfig memory _config) internal virtual {
         // Logic for updating the Pool handled in calling contract
+        config = _config;
         emit Configure(_updater, _config);
     }
 
     // MetadataURI contain details about project application
-    function _register(address project, string memory _metadataURI, bytes memory data) public {
+    function _register(address project, string memory _metadataURI, bytes memory data) internal {
         require(registrations[project].owner == address(0), "Already registered");
         registrations[project] = Registration(Status.pending, msg.sender, _metadataURI, data);
         emit Register(project, msg.sender, _metadataURI, data);
     }
 
-    function _review(address project, uint8 status, string memory _metadataURI, bytes memory data) public virtual {
+    function _review(address project, uint8 status, string memory _metadataURI, bytes memory data) internal {
         Registration storage registration = registrations[project];
-        require(registration.status != Status.approved, "Already approved");
         registration.status = Status(status);
         // MetadataURI can contain information about review, or potential rejection reason
         emit Review(project, status, msg.sender, _metadataURI, data);
     }
 
-    function _update(address project, string memory _metadataURI, bytes memory data) public {
+    function _update(address project, string memory _metadataURI, bytes memory data) internal {
         require(registrations[project].owner == msg.sender, "Must be owner to update");
+        require(registrations[project].status != Status.approved, "Already approved");
         registrations[project].metadataURI = _metadataURI;
         registrations[project].data = data;
         emit Update(project, msg.sender, _metadataURI, data);
@@ -108,12 +102,9 @@ contract Pool is IPool {
 
     // Allocate tokens to recipients (transfers tokens from caller to recipients)
     // This can be used to transfer tokens to projects, or the contract itself to fund with matching funds for example
-    function _allocate(
-        address[] memory recipients,
-        uint256[] memory amounts,
-        address token,
-        bytes[] memory data
-    ) public virtual {
+    function _allocate(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
+        internal
+    {
         uint256 length = recipients.length;
         require(length > 0 && length == amounts.length, "Mismatched lengths");
 
@@ -129,12 +120,9 @@ contract Pool is IPool {
 
     // Distribute tokens to recipients (transfers tokens from the contract to recipients)
     // Can be used to distribute matching funds to projects
-    function _distribute(
-        address[] memory recipients,
-        uint256[] memory amounts,
-        address token,
-        bytes[] memory data
-    ) public virtual {
+    function _distribute(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
+        internal
+    {
         uint256 length = recipients.length;
         require(length > 0 && length == amounts.length, "Mismatched lengths");
 
@@ -153,4 +141,40 @@ contract Pool is IPool {
 
     function _beforeAllocate(address recipient, uint256 amount, address token, bytes memory data) internal virtual {}
     function _beforeDistribute(address recipient, uint256 amount, address token, bytes memory data) internal virtual {}
+
+    function configure(address updater, PoolConfig memory _config) external virtual override {
+        _configure(updater, _config);
+    }
+
+    function register(address project, string memory metadataURI, bytes memory data) external virtual override {
+        _register(project, metadataURI, data);
+    }
+
+    function update(address project, string memory metadataURI, bytes memory data) external virtual override {
+        _update(project, metadataURI, data);
+    }
+
+    function review(address project, uint8 status, string memory metadataURI, bytes memory data)
+        external
+        virtual
+        override
+    {
+        _review(project, status, metadataURI, data);
+    }
+
+    function allocate(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
+        external
+        virtual
+        override
+    {
+        _allocate(recipients, amounts, token, data);
+    }
+
+    function distribute(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
+        external
+        virtual
+        override
+    {
+        _distribute(recipients, amounts, token, data);
+    }
 }

@@ -13,8 +13,8 @@ import {Pool, PoolConfig} from "../Pool.sol";
 contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
     constructor(string memory _name, string memory _schema, PoolConfig memory _config) Pool(_name, _schema, _config) {}
 
-    function initialize(PoolConfig memory _config, bytes calldata data) public override {
-        // super.initialize(_config, data);
+    function initialize(PoolConfig memory _config, bytes memory data) public override {
+        super.initialize(_config, data);
         _grantRole(DEFAULT_ADMIN_ROLE, _config.owner);
         for (uint256 i = 0; i < _config.admins.length; i++) {
             _grantRole(DEFAULT_ADMIN_ROLE, _config.admins[i]);
@@ -22,23 +22,25 @@ contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
     }
 
     // MetadataURI contain details about project application
-    function register(address project, string memory _metadataURI, bytes memory data) external {
+    function register(address project, string memory _metadataURI, bytes memory data) external override {
         _register(project, _metadataURI, data);
     }
 
     function review(address project, uint8 status, string memory _metadataURI, bytes memory data)
         external
+        override
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
         _review(project, status, _metadataURI, data);
     }
 
-    function update(address project, string memory _metadataURI, bytes memory data) external {
+    function update(address project, string memory _metadataURI, bytes memory data) external override {
         _update(project, _metadataURI, data);
     }
 
     function allocate(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
         external
+        override
         nonReentrant
     {
         require(
@@ -51,6 +53,7 @@ contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
 
     function distribute(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
         external
+        override
         onlyRole(DEFAULT_ADMIN_ROLE)
         nonReentrant
     {
@@ -64,10 +67,10 @@ contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
             "Recipient is not approved"
         );
 
-        if (token == config.distributionToken) {
-            uint256 balance = IERC20(token).balanceOf(address(this));
-            require(config.maxAmount == 0 || amount + balance <= config.maxAmount, "Max amount reached");
-        }
+        // if (token == config.distributionToken) {
+        //     uint256 balance = IERC20(token).balanceOf(address(this));
+        //     require(config.maxAmount == 0 || amount + balance <= config.maxAmount, "Max amount reached");
+        // }
     }
 
     function _beforeDistribute(address recipient, uint256 amount, address token, bytes memory data) internal override {

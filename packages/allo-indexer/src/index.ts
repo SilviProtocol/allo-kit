@@ -1,9 +1,10 @@
 import { Context, Event, ponder } from "ponder:registry";
 import schemas from "ponder:schema";
-import { Address, erc20Abi, Hex, zeroAddress, getAddress } from "viem";
+import { Address, erc20Abi, Hex, zeroAddress } from "viem";
 import pRetry from "p-retry";
 import { cachedFetchWithRetry } from "./lib/fetch";
 import { Metadata } from "../ponder.schema";
+import { decodeData } from "./lib/schema";
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 const PINATA_GATEWAY_URL = process.env.PINATA_GATEWAY_URL;
@@ -16,6 +17,7 @@ ponder.on("PoolFactory:Created", async ({ event, context }) => {
   const {
     strategy,
     pool,
+    data,
     config: {
       owner,
       metadataURI,
@@ -29,6 +31,14 @@ ponder.on("PoolFactory:Created", async ({ event, context }) => {
   const chainId = context.chain.id;
 
   const metadata = await fetchMetadata(metadataURI);
+
+  // Fetch strategy schema from the database and decode the data
+  const decodedData = await context.db
+    .find(schemas.strategy, {
+      address: strategy,
+    })
+    .then((r) => (r?.schema ? decodeData(r.schema, data) : {}));
+
   await context.db
     .insert(schemas.pool)
     .values({
@@ -37,6 +47,8 @@ ponder.on("PoolFactory:Created", async ({ event, context }) => {
       owner,
       chainId,
       strategy,
+      data,
+      decodedData,
       allocationToken,
       distributionToken,
       admins,

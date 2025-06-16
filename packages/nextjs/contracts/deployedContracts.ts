@@ -790,7 +790,7 @@ const deployedContracts = {
             },
             {
               internalType: "bytes",
-              name: "",
+              name: "data",
               type: "bytes",
             },
           ],
@@ -885,6 +885,19 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [],
+          name: "schema",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
           inputs: [
             {
               internalType: "address",
@@ -975,6 +988,18 @@ const deployedContracts = {
               internalType: "struct PoolConfig",
               name: "config",
               type: "tuple",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "schema",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "bytes",
+              name: "data",
+              type: "bytes",
             },
           ],
           name: "Created",
@@ -1792,6 +1817,19 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [],
+          name: "schema",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
           inputs: [
             {
               internalType: "bytes4",
@@ -1843,6 +1881,7 @@ const deployedContracts = {
         register: "contracts/Pool.sol",
         registrations: "contracts/Pool.sol",
         review: "contracts/Pool.sol",
+        schema: "contracts/Pool.sol",
         update: "contracts/Pool.sol",
         DEFAULT_ADMIN_ROLE: "@openzeppelin/contracts/access/AccessControl.sol",
         getRoleAdmin: "@openzeppelin/contracts/access/AccessControl.sol",
@@ -3692,6 +3731,7 @@ const deployedContracts = {
         register: "contracts/Pool.sol",
         registrations: "contracts/Pool.sol",
         review: "contracts/Pool.sol",
+        schema: "contracts/Pool.sol",
         update: "contracts/Pool.sol",
         DEFAULT_ADMIN_ROLE: "@openzeppelin/contracts/access/AccessControl.sol",
         getRoleAdmin: "@openzeppelin/contracts/access/AccessControl.sol",

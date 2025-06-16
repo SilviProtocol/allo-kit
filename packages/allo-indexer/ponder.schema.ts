@@ -24,6 +24,8 @@ export const pool = onchainTable("pool", (t) => ({
   metadataURI: t.text(),
   allocationToken: t.hex().notNull(),
   distributionToken: t.hex().notNull(),
+  data: t.hex().notNull(),
+  decodedData: t.json().$type<Record<string, unknown>>(),
   admins: t.text().array(),
   maxAmount: t.bigint().notNull(),
   timestamps: t.bigint().array(),

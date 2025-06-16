@@ -2,8 +2,9 @@
 import { type z } from "zod";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFormContext } from "react-hook-form";
+import { Controller, useForm, useFormContext } from "react-hook-form";
 
+import { encodeData } from "@allo-kit/sdk/utils";
 import {
   Form,
   FormControl,
@@ -61,7 +62,9 @@ export function PoolForm({
 
   const selectedStrategy = strategies.find(
     (s) => s.address === form.watch("strategy")
-  )?.name;
+  );
+
+  console.log(selectedStrategy);
   return (
     <Form {...form}>
       <form
@@ -70,12 +73,10 @@ export function PoolForm({
           console.log(values);
           // const metadataURI = ""; // Quick debug
           const { cid: metadataURI } = await upload.mutateAsync(metadata);
-          const strategy = strategies.find(
-            (s) => s.address === values.strategy
-          );
-          if (!strategy) throw new Error("Strategy not found");
 
-          console.log("strategy", strategy);
+          if (!selectedStrategy) throw new Error("Strategy not found");
+
+          console.log("selectedStrategy", selectedStrategy);
 
           const allocationToken = tokens.find(
             (t) => t.address === values.allocationToken
@@ -84,7 +85,7 @@ export function PoolForm({
 
           create
             .mutateAsync([
-              strategy.address,
+              selectedStrategy.address,
               {
                 ...values,
                 metadataURI,
@@ -94,11 +95,12 @@ export function PoolForm({
                 ),
                 timestamps: [],
               },
-              "0x",
+              // TODO: Encode custom data from the form
+              // encodeData(selectedStrategy.schema, values.strategyData),
+              encodeData(selectedStrategy.schema, [123]),
             ])
-            .then(({ pool }) => {
-              console.log("created pool", pool);
-              router.push(`/dashboard/${pool}`);
+            .then((r) => {
+              if (r?.pool) router.push(`/dashboard/${r.pool}`);
             });
           return;
 
@@ -289,7 +291,7 @@ export function PoolForm({
         {selectedStrategy &&
           createElement(
             strategyComponents[
-              selectedStrategy as keyof typeof strategyComponents
+              selectedStrategy.name as keyof typeof strategyComponents
             ],
             { tokens }
           )}
@@ -310,11 +312,28 @@ const strategyComponents = {
   RetroFunding: RetroFundingForm,
   QuadraticFunding: QuadraticFundingForm,
 };
+// TODO: Use this to pass custom data to the strategy
 function RetroFundingForm({ tokens }: { tokens: Token[] }) {
   const form = useFormContext();
   return (
     <>
-      <pre>Additional RetroFunding data</pre>
+      <div>Additional RetroFunding data</div>
+      <Controller
+        control={form.control}
+        name="strategyData"
+        render={({ field }) => (
+          <FormField
+            control={form.control}
+            name="strategyData.amount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Example</FormLabel>
+                <Input placeholder="0" {...field} />
+              </FormItem>
+            )}
+          />
+        )}
+      />
     </>
   );
 }

@@ -27,6 +27,8 @@ interface IPool {
         bytes data; // Data can contain information that can be accessed later
     }
 
+    function schema() external view returns (string memory);
+
     event Deployed(string name, address indexed owner, string schema, string metadataURI);
     event Allocate(address indexed from, address indexed to, uint256 amount, address token, bytes data);
     event Register(address indexed project, address indexed owner, string metadataURI, bytes data);
@@ -58,15 +60,22 @@ Crowdfunding
 contract Pool is IPool {
     bool private _initialized;
     PoolConfig public config;
+    string public schema;
 
     mapping(address => Registration) public registrations;
 
+    /**
+     * @param _name Name of the Pool Strategy
+     * @param _schema Schema of the Pool (uint256 param, string anotherParam) - can be used for passing custom data
+     * @param _metadataURI Metadata URI of the Pool (title, description, etc.)
+     */
     constructor(string memory _name, string memory _schema, string memory _metadataURI) {
         // Emit an event for the Indexer so Pools can be created with this Strategy
         emit Deployed(_name, msg.sender, _schema, _metadataURI);
+        schema = _schema;
     }
 
-    function initialize(PoolConfig memory _config, bytes memory) public virtual {
+    function initialize(PoolConfig memory _config, bytes memory data) public virtual {
         require(!_initialized, "Already initialized");
         _initialized = true;
         config = _config;

@@ -66,14 +66,15 @@ contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
             recipient == address(this) || registrations[recipient].status == Status.approved,
             "Recipient is not approved"
         );
-
-        // if (token == config.distributionToken) {
-        //     uint256 balance = IERC20(token).balanceOf(address(this));
-        //     require(config.maxAmount == 0 || amount + balance <= config.maxAmount, "Max amount reached");
-        // }
+        if (recipient == address(this)) {
+            uint256 balance = IERC20(token).balanceOf(address(this));
+            require(config.maxAmount == 0 || amount + balance <= config.maxAmount, "Max amount reached");
+        }
     }
 
     function _beforeDistribute(address recipient, uint256 amount, address token, bytes memory data) internal override {
+        uint256 balance = IERC20(token).balanceOf(address(this));
+        require(amount <= balance, "Amount exceeds balance");
         require(registrations[recipient].status == Status.approved, "Recipient is not approved");
     }
 }

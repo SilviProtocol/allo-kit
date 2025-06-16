@@ -81,10 +81,10 @@ contract Pool is IPool {
         config = _config;
     }
 
-    function _configure(address _updater, PoolConfig memory _config) internal virtual {
+    function _configure(PoolConfig memory _config) internal virtual {
         // Logic for updating the Pool handled in calling contract
         config = _config;
-        emit Configure(_updater, _config);
+        emit Configure(msg.sender, _config);
     }
 
     // MetadataURI contain details about project application

@@ -99,8 +99,9 @@ export function PoolForm({
               // encodeData(selectedStrategy.schema, values.strategyData),
               encodeData(selectedStrategy.schema, [123]),
             ])
-            .then((r) => {
-              if (r?.pool) router.push(`/dashboard/${r.pool}`);
+            .then(({ pool, ...rest }) => {
+              console.log("rest", rest, pool);
+              router.push(`/dashboard/${pool}`);
             });
           return;
 

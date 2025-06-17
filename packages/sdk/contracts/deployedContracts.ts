@@ -664,11 +664,6 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "address",
-              name: "updater",
-              type: "address",
-            },
-            {
               components: [
                 {
                   internalType: "address",
@@ -988,12 +983,6 @@ const deployedContracts = {
               internalType: "struct PoolConfig",
               name: "config",
               type: "tuple",
-            },
-            {
-              indexed: false,
-              internalType: "string",
-              name: "schema",
-              type: "string",
             },
             {
               indexed: false,
@@ -1498,11 +1487,6 @@ const deployedContracts = {
         },
         {
           inputs: [
-            {
-              internalType: "address",
-              name: "updater",
-              type: "address",
-            },
             {
               components: [
                 {

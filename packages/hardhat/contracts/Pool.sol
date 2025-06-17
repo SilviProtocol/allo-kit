@@ -37,7 +37,7 @@ interface IPool {
     event Configure(address indexed updater, PoolConfig config);
 
     function initialize(PoolConfig memory config, bytes memory data) external;
-    function configure(address updater, PoolConfig memory config) external;
+    function configure(PoolConfig memory config) external;
     function register(address project, string memory metadataURI, bytes memory data) external;
     function update(address project, string memory metadataURI, bytes memory data) external;
     function review(address project, uint8 status, string memory metadataURI, bytes memory data) external;
@@ -151,8 +151,8 @@ contract Pool is IPool {
     function _beforeAllocate(address recipient, uint256 amount, address token, bytes memory data) internal virtual {}
     function _beforeDistribute(address recipient, uint256 amount, address token, bytes memory data) internal virtual {}
 
-    function configure(address updater, PoolConfig memory _config) external virtual override {
-        _configure(updater, _config);
+    function configure(PoolConfig memory _config) external virtual override {
+        _configure(_config);
     }
 
     function register(address project, string memory metadataURI, bytes memory data) external virtual override {

@@ -1,5 +1,5 @@
 {
-  "name": "@allo-kit/allo-indexer",
+  "name": "@se-2/allo-indexer",
   "private": true,
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "allo-docs",
+  "name": "@se-2/allo-docs",
   "version": "0.1.0",
   "private": true,
   "scripts": {

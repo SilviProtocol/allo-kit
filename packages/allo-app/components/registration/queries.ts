@@ -27,7 +27,8 @@ export const REGISTRATIONS_SCHEMA = gql`
         review
         createdAt
         updatedAt
-        status    
+        status   
+        owner 
         allocations {
           items {
             id

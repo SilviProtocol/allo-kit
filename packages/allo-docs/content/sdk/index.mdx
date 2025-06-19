@@ -19,7 +19,7 @@ The AlloKit SDK is a TypeScript/JavaScript library that provides a simple interf
 2. **Configure**: Update pool settings and parameters
 3. **Register**: Projects apply to join the pool
 4. **Review**: Pool admins approve or reject applications
-5. **Allocate**: Determine funding amounts for approved projects  
+5. **Allocate**: Determine funding amounts for approved projects
 6. **Distribute**: Transfer funds to recipients
 
 ### Key Components
@@ -51,14 +51,14 @@ const { pool } = await sdk.deployPool(ownerAddress, {
   distributionToken: tokenAddress,
   maxAmount: parseUnits("10000", 18),
   timestamps: [startTime, endTime],
-  metadataURI: "ipfs://...",
+  metadataURI: "ipfs cid",
 });
 
 // Register a project
-await sdk.register(pool, projectAddress, "ipfs://project-metadata");
+await sdk.register(pool, projectAddress, "ipfs cid");
 
 // Approve the project
-await sdk.review(pool, projectAddress, 2, "ipfs://review-metadata");
+await sdk.review(pool, projectAddress, 1, "ipfs cid");
 
 // Allocate funds
 await sdk.allocate(

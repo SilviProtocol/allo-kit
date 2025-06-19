@@ -1,0 +1,211 @@
+# AlloKit App
+
+The AlloKit App is a comprehensive Next.js 15 application that provides a complete interface for managing grant pools, project registrations, and token allocations. Built with modern web technologies and Web3 integration, it offers both end-user interfaces and administrative dashboards.
+
+## Architecture Overview
+
+### Technology Stack
+
+- **Next.js 15** with App Router and React 19
+- **TypeScript** for type safety
+- **TailwindCSS 4** for styling with Radix UI components
+- **Wagmi 2.15** for Ethereum interactions
+- **RainbowKit** for wallet connections
+- **TanStack Query** for state management and caching
+- **Zod** for schema validation
+- **GraphQL** with URQL for indexer data fetching
+
+### Core Features
+
+#### For Project Owners
+- **Project Registration**: Submit applications to grant pools
+- **Profile Management**: Manage project information and metadata
+- **Application Tracking**: Monitor application status and reviews
+
+#### For Pool Owners  
+- **Pool Creation**: Create and configure grant pools with different strategies
+- **Application Review**: Approve or reject project applications
+- **Fund Management**: Add matching funds and manage pool finances
+- **Distribution**: Distribute matching funds to approved projects
+- **Analytics**: Track pool performance and allocation data
+
+#### For Donors/Voters
+- **Pool Discovery**: Browse and explore available grant pools
+- **Project Browsing**: Discover projects within pools
+- **Donations**: Allocate tokens to support projects
+- **Cart System**: Add multiple projects and donate in batches
+
+## Application Structure
+
+### Routes
+
+The app uses Next.js App Router with the following main sections:
+
+```
+app/
+├── app/                     # Public interfaces
+│   ├── pools/              # Pool exploration
+│   │   ├── [poolAddress]/  # Individual pool pages
+│   │   │   ├── apply/      # Project application
+│   │   │   ├── checkout/   # Donation checkout
+│   │   │   └── projects/   # Pool projects
+│   │   └── page.tsx        # Pool discovery
+│   └── profile/            # User profile management
+├── dashboard/              # Administrative interfaces
+│   ├── [poolAddress]/      # Pool management dashboard
+│   │   ├── applications/   # Review applications
+│   │   ├── distribution/   # Fund distribution
+│   │   ├── funds/         # Pool funding
+│   │   ├── settings/      # Pool configuration
+│   │   └── voters/        # Voter management
+│   └── create-pool/       # Pool creation wizard
+└── api/                   # API routes
+    └── ipfs/              # IPFS upload endpoint
+```
+
+### Data Flow
+
+1. **Smart Contracts** emit events → **Ponder Indexer** processes events → **GraphQL API**
+2. **Frontend** queries indexer via GraphQL and interacts with contracts via Wagmi
+3. **TanStack Query** provides caching and optimistic updates
+4. **Zod schemas** validate all forms and API data
+
+## Key Components
+
+### Pool Management
+- **PoolForm**: Create new grant pools with strategy selection
+- **PoolCard**: Display pool information with funding status
+- **PoolDashboard**: Administrative interface for pool owners
+
+### Project Registration
+- **RegistrationForm**: Submit project applications
+- **ApplicationsList**: Review and approve applications
+- **ProjectCard**: Display project information and funding
+
+### Token Operations
+- **AllocationForm**: Donate to projects with cart functionality
+- **AllowanceCheck**: Handle token approvals automatically
+- **TokenAmount**: Format and display token amounts correctly
+
+### User Interface
+- **ConnectButton**: Wallet connection with network switching
+- **NetworkSelector**: Switch between supported chains
+- **Cart System**: Batch donations across multiple projects
+
+## Hooks & State Management
+
+### Core Hooks
+- **useContracts**: Access deployed contract instances
+- **useIndexer**: Query blockchain data via GraphQL
+- **useGlobalState**: Custom global state management
+- **useCart**: Shopping cart for project donations
+
+### Specialized Hooks
+- **useQuadraticMatching**: Calculate quadratic funding distributions
+- **useIpfsUpload**: Upload metadata to IPFS
+- **useCurrentChain**: Chain and network management
+
+## Development Workflow
+
+### Getting Started
+
+1. **Start Local Development**:
+   ```bash
+   yarn chain          # Start Hardhat node
+   yarn deploy         # Deploy contracts
+   yarn allo:indexer   # Start Ponder indexer
+   yarn allo:dev       # Start Next.js app
+   ```
+
+2. **Environment Setup**:
+   - Copy `.env.sample` to `.env.local`
+   - Configure IPFS settings (Pinata)
+   - Set up indexer endpoints
+
+### Configuration
+
+#### Chain Configuration
+The app supports multiple chains configured in `config.ts`:
+- **Hardhat**: Local development (chainId: 31337)
+- **Base Sepolia**: Testnet (chainId: 84532)
+- **Base Mainnet**: Production (chainId: 8453)
+
+#### Contract Integration
+- Contracts are auto-deployed via Hardhat scripts
+- TypeScript types generated via Wagmi CLI
+- Contract addresses managed in `deployedContracts.ts`
+
+## User Workflows
+
+### Creating a Grant Pool
+
+1. **Pool Configuration**: Select strategy (QuadraticFunding, DirectGrants)
+2. **Token Setup**: Choose allocation and distribution tokens
+3. **Pool Settings**: Set funding limits, deadlines, metadata
+4. **Deployment**: Deploy pool via PoolFactory
+
+### Project Application Process
+
+1. **Registration**: Submit project with metadata and details
+2. **Review**: Pool admins approve or reject applications
+3. **Funding**: Approved projects can receive donations
+4. **Distribution**: Pool owners distribute matching funds
+
+### Donation Flow
+
+1. **Discovery**: Browse pools and projects
+2. **Selection**: Add projects to cart
+3. **Checkout**: Review donations and approve tokens
+4. **Allocation**: Execute batch donations
+
+## Integration Points
+
+### Blockchain Integration
+- **Wagmi**: Contract interactions and wallet management
+- **Viem**: Low-level Ethereum operations
+- **RainbowKit**: Wallet connection UI
+
+### Data Layer
+- **Ponder Indexer**: Real-time blockchain event processing
+- **GraphQL**: Structured data queries with caching
+- **IPFS**: Decentralized metadata storage
+
+### UI/UX
+- **Shadcn/UI**: Component library with Radix primitives
+- **TailwindCSS**: Utility-first styling
+- **Responsive Design**: Mobile-first approach
+
+## Best Practices
+
+### Form Handling
+```tsx
+// Use Zod schemas for validation
+const form = useForm<z.infer<typeof PoolSchema>>({
+  resolver: zodResolver(PoolSchema),
+  defaultValues
+});
+```
+
+### Token Operations
+```tsx
+// Always wrap with allowance checks
+<AllowanceCheck tokenAddress={token} spenderAddress={pool}>
+  <Button onClick={donate}>Donate</Button>
+</AllowanceCheck>
+```
+
+### Error Handling
+```tsx
+// Use extractErrorReason for user-friendly messages
+catch (error) {
+  toast.error(extractErrorReason(error));
+}
+```
+
+### State Management
+```tsx
+// Use global state for cross-component data
+const useCartState = createGlobalState({ items: {} });
+```
+
+The AlloKit App provides a complete, production-ready interface for decentralized grant management, combining modern web development practices with robust Web3 integration.

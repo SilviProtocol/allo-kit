@@ -1,14 +1,107 @@
-# Allo App
+# AlloKit App
 
-The Allo App is a Next.js app with hooks and components to interact with the Strategy contracts and the Indexer.
+The AlloKit App is a Next.js 15 application for managing grant pools, project registrations, and token allocations. It provides interfaces for project owners, pool managers, and donors.
 
+## Technology Stack
 
-### I want to:
+- **Next.js 15** with App Router and React 19
+- **TypeScript** for type safety
+- **TailwindCSS 4** with Radix UI components
+- **Wagmi 2.15** for Ethereum interactions
+- **TanStack Query** for state management and caching
+- **GraphQL** for indexer data fetching
 
-- Create or view Projects
-  - Register Projects
-  - Browse Projects
-  - Approve Projects
-- Fund or Vote for Projects
-  - Choose Projects Fund or Vote for
-  - Transfer tokens to Projects
+## Core Features
+
+#### For Project Owners
+- Submit applications to grant pools
+- Manage project information and metadata
+- Track application status and reviews
+
+#### For Pool Owners  
+- Create and configure grant pools
+- Review and approve project applications
+- Manage pool funds and distributions
+
+#### For Donors
+- Browse and explore grant pools
+- Discover projects within pools
+- Donate to projects with cart system
+
+## Application Structure
+
+The app uses Next.js App Router with these main sections:
+
+```
+app/
+├── app/                     # Public interfaces
+│   ├── pools/              # Pool exploration and projects
+│   └── profile/            # User profile management
+├── dashboard/              # Pool management interfaces
+│   ├── [poolAddress]/      # Pool-specific dashboard
+│   └── create-pool/       # Pool creation wizard
+└── api/ipfs/              # IPFS upload endpoint
+```
+
+## Data Flow
+
+1. **Smart Contracts** emit events → **Ponder Indexer** → **GraphQL API**
+2. **Frontend** queries indexer via GraphQL and interacts with contracts via Wagmi
+3. **TanStack Query** provides caching and real-time updates
+
+## Key Components
+
+### Pool Management
+- **PoolForm**: Create new grant pools
+- **PoolCard**: Display pool information
+- **PoolDashboard**: Administrative interface
+
+### Project Registration
+- **RegistrationForm**: Submit project applications
+- **ApplicationsList**: Review and approve applications
+
+### Token Operations
+- **AllocationForm**: Donate to projects with cart
+- **AllowanceCheck**: Handle token approvals
+- **TokenAmount**: Format token displays
+
+## Development Setup
+
+Start the development environment:
+
+```bash
+yarn chain          # Start Hardhat node
+yarn deploy         # Deploy contracts
+yarn allo:indexer   # Start Ponder indexer
+yarn allo:dev       # Start Next.js app
+```
+
+Environment setup:
+- Copy `.env.sample` to `.env.local`
+- Configure IPFS settings (Pinata)
+
+## Supported Chains
+
+- **Hardhat**: Local development (chainId: 31337)
+- **Base Sepolia**: Testnet (chainId: 84532)
+- **Base Mainnet**: Production (chainId: 8453)
+
+## User Workflows
+
+### Creating a Grant Pool
+1. Select strategy (QuadraticFunding, DirectGrants)
+2. Choose allocation and distribution tokens
+3. Set funding limits and metadata
+4. Deploy via PoolFactory
+
+### Project Application
+1. Submit project with metadata
+2. Admins review and approve/reject
+3. Approved projects receive donations
+4. Pool owners distribute matching funds
+
+### Donation Process
+1. Browse pools and projects
+2. Add projects to cart
+3. Review and approve tokens
+4. Execute batch donations

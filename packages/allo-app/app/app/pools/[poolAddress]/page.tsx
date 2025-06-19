@@ -15,6 +15,7 @@ import { Markdown } from "~/components/markdown";
 import { RegistrationsList } from "~/components/registration/registrations-list";
 import Link from "next/link";
 import { NetworkBadge } from "~/components/network-badge";
+import { useAccount } from "wagmi";
 
 function ApplyPoolButton({ poolAddress }: { poolAddress: Address }) {
   // TODO: Check if pool can be applied to
@@ -26,7 +27,6 @@ function ApplyPoolButton({ poolAddress }: { poolAddress: Address }) {
 }
 
 function ManagePoolButton({ poolAddress }: { poolAddress: Address }) {
-  // TODO: Check if connected wallet is owner
   return (
     <Link prefetch href={`/dashboard/${poolAddress}`}>
       <Button variant="outline" icon={Pencil}>
@@ -38,6 +38,7 @@ function ManagePoolButton({ poolAddress }: { poolAddress: Address }) {
 
 export default function PoolDetailsPage() {
   const params = useParams();
+  const account = useAccount();
   const poolAddress = params.poolAddress as Address;
   const { data: pool } = usePoolById(poolAddress);
 
@@ -49,7 +50,9 @@ export default function PoolDetailsPage() {
       actions={
         <>
           <ApplyPoolButton poolAddress={poolAddress} />
-          <ManagePoolButton poolAddress={poolAddress} />
+          {account?.address?.toLowerCase() === pool?.owner?.toLowerCase() && (
+            <ManagePoolButton poolAddress={poolAddress} />
+          )}
         </>
       }
     >

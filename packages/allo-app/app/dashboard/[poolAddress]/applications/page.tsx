@@ -22,6 +22,7 @@ export default function DashboardApplicationsPage() {
           <div className="flex justify-end">
             <RegistrationReviewButton id={registration.id} />
             <Link
+              target="_blank"
               href={`/app/pools/${poolAddress}/registrations/${registration.address}`}
             >
               <Button variant="link" iconRight={ArrowRight}>

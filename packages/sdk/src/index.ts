@@ -42,13 +42,21 @@ export class AlloKitSDK {
     config: PoolConfig,
     data: Hex = "0x"
   ): Promise<{ pool: Address }> {
-    console.log("deploying pool", address, data);
     return this.#executeTransaction({
       abi: this.#poolFactory.abi,
       address: this.#poolFactory.address,
       functionName: "deploy",
       args: [address, config, data],
       eventName: "Created",
+    });
+  }
+  async configure(pool: Address, config: PoolConfig): Promise<void> {
+    return this.#executeTransaction({
+      abi: this.#pool.abi,
+      address: pool,
+      functionName: "configure",
+      args: [config],
+      eventName: "Configure",
     });
   }
 

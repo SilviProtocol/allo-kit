@@ -26,6 +26,19 @@ export function useCreatePool() {
   });
 }
 
+export function useConfigurePool() {
+  const sdk = useAlloKitSDK();
+  return useMutation({
+    mutationFn: async (args: [Address, PoolConfig]) => {
+      const [address, config] = args;
+      return sdk?.configure(address, config);
+    },
+    onSuccess: () => toast.success("Pool configured!"),
+    onError: (error) =>
+      toast.error(extractErrorReason(String(error)) ?? "Configure error"),
+  });
+}
+
 export function usePools(
   variables: IndexerQuery,
   { enabled }: { enabled?: boolean } = {}

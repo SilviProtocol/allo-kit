@@ -51,7 +51,3 @@ export default function DashboardPage() {
     </Page>
   );
 }
-
-function PoolCardSkeleton() {
-  return <div className="aspect-video rounded-xl bg-muted/50" />;
-}

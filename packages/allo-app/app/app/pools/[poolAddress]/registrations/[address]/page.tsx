@@ -48,8 +48,6 @@ export default function RegistrationDetailsPage() {
   const params = useParams();
   const account = useAccount();
   const address = params.address as Address;
-  const cart = useCart();
-  const router = useRouter();
   const { data: project } = useRegistration({
     address,
     poolAddress: params.poolAddress as Address,

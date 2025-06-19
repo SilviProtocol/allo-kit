@@ -84,6 +84,21 @@ ponder.on("Pool:Deployed", async ({ event, context }) => {
     .onConflictDoNothing();
 });
 
+ponder.on("Pool:Configure", async ({ event, context }) => {
+  const chainId = context.chain.id;
+  const pool = event.log.address;
+  const metadata = await fetchMetadata(event.args.config.metadataURI);
+
+  await context.db
+    .update(schemas.pool, {
+      id: [chainId, pool].join("_"),
+    })
+    .set(() => ({
+      updatedAt: event.block.timestamp * 1000n,
+      metadata,
+    }));
+});
+
 ponder.on("Pool:Register", async ({ event, context }) => {
   const chainId = context.chain.id;
   const { project, metadataURI, data, owner } = event.args;
@@ -124,6 +139,7 @@ ponder.on("Pool:Review", async ({ event, context }) => {
     }));
 });
 
+// Update Registration Metadata
 ponder.on("Pool:Update", async ({ event, context }) => {
   const metadata = await fetchMetadata(event.args.metadataURI);
 

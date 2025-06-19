@@ -6,6 +6,8 @@ import { Address } from "viem";
 import { useToken } from "../token/use-token";
 import { TokenAmount } from "../token/token-amount";
 import { Pool } from "./schemas";
+import { useRegistrations } from "../registration/use-register";
+import { useAllocations } from "../allocation/use-allocate";
 
 export function PoolDashboard({ pool }: { pool: Pool }) {
   const matchingToken = useToken(
@@ -13,6 +15,13 @@ export function PoolDashboard({ pool }: { pool: Pool }) {
     pool?.address
   );
   const matchingFunds = matchingToken.data?.balance ?? BigInt(0);
+
+  const registrations = useRegistrations({
+    where: { pool_in: [pool?.address as Address], status_in: ["approved"] },
+  });
+  const fundings = useAllocations({
+    where: { to_in: [pool?.address as Address] },
+  });
 
   return (
     <div className="space-y-6">
@@ -38,8 +47,7 @@ export function PoolDashboard({ pool }: { pool: Pool }) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {"-"}
-              {/* {selectedPool.applicationsCount} */}
+              {registrations.data?.totalCount ?? "-"}
             </div>
           </CardContent>
         </Card>
@@ -49,7 +57,9 @@ export function PoolDashboard({ pool }: { pool: Pool }) {
             <HandCoins className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{"-"}</div>
+            <div className="text-2xl font-bold">
+              {fundings.data?.totalCount ?? "-"}
+            </div>
           </CardContent>
         </Card>
         <Card className="gap-0">

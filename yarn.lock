@@ -38,7 +38,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@allo-kit/sdk@workspace:*, @allo-kit/sdk@workspace:packages/sdk":
+"@allo-kit/sdk@npm:0.1.3":
+  version: 0.1.3
+  resolution: "@allo-kit/sdk@npm:0.1.3"
+  dependencies:
+    "@wagmi/cli": ^2.3.1
+    "@wagmi/core": ^2.16.3
+    viem: ^2.21.56
+  peerDependencies:
+    typescript: ^5.0.0
+  checksum: a7117fdc748d4ecea7f00232e9f0939eace165f34083a4b4d607a49fc0f008641e4753b40485e2a4ddd5ead9d6a23b029dec86cd86be55e416966839cc8d7fa8
+  languageName: node
+  linkType: hard
+
+"@allo-kit/sdk@workspace:packages/sdk":
   version: 0.0.0-use.local
   resolution: "@allo-kit/sdk@workspace:packages/sdk"
   dependencies:
@@ -5632,7 +5645,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@se-2/allo-app@workspace:packages/allo-app"
   dependencies:
-    "@allo-kit/sdk": "workspace:*"
+    "@allo-kit/sdk": 0.1.3
     "@eslint/eslintrc": ^3.3.1
     "@hookform/resolvers": ^5.0.1
     "@radix-ui/react-accordion": ^1.2.10

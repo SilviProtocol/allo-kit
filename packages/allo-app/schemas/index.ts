@@ -5,6 +5,7 @@ export type Registration = {
   chainId: number;
   index: number;
   address: Address;
+  owner: Address;
   metadata: {
     title: string;
     image: string;

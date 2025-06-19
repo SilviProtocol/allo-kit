@@ -2,7 +2,7 @@ import { Badge } from "../ui/badge";
 
 const VARIANT_MAP = {
   approved: "success",
-  rejected: "secondary",
+  rejected: "destructive",
   pending: "secondary",
 } as const;
 

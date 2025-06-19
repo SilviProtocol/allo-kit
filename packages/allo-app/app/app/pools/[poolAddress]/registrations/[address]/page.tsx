@@ -13,6 +13,7 @@ import { Markdown } from "~/components/markdown";
 import { ApprovedBadge } from "~/components/registration/approved-badge";
 import { useRegistration } from "~/components/registration/use-register";
 import { Pencil } from "lucide-react";
+import { useAccount } from "wagmi";
 
 function AddToCartButton({ id }: { id: string }) {
   // TODO: Check if project is approved
@@ -45,6 +46,7 @@ function EditProjectButton({ id }: { id: string }) {
 
 export default function RegistrationDetailsPage() {
   const params = useParams();
+  const account = useAccount();
   const address = params.address as Address;
   const cart = useCart();
   const router = useRouter();
@@ -62,8 +64,13 @@ export default function RegistrationDetailsPage() {
       }
       actions={
         <>
-          <AddToCartButton id={project?.id!} />
-          <EditProjectButton id={project?.id!} />
+          {project?.status === "approved" && (
+            <AddToCartButton id={project?.id!} />
+          )}
+          {account?.address?.toLowerCase() ===
+            project?.owner?.toLowerCase() && (
+            <EditProjectButton id={project?.id!} />
+          )}
         </>
       }
     >

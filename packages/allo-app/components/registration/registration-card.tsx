@@ -39,18 +39,20 @@ export function RegistrationCard({
         {/* <ApprovedBadge status={project?.status} /> */}
         {/* <NetworkBadge chainId={project?.chainId} /> */}
       </div>
-      <Button
-        className="rounded-full absolute top-2 right-2"
-        size="icon"
-        variant="outline"
-        disabled={isLoading}
-        onClick={(e) => {
-          e.preventDefault();
-          onSelect?.(e);
-        }}
-        icon={inCart ? Heart : HeartPlus}
-        iconProps={inCart ? { fill: "red", stroke: "none" } : {}}
-      />
+      {project.status === "approved" && (
+        <Button
+          className="rounded-full absolute top-2 right-2"
+          size="icon"
+          variant="outline"
+          disabled={isLoading}
+          onClick={(e) => {
+            e.preventDefault();
+            onSelect?.(e);
+          }}
+          icon={inCart ? Heart : HeartPlus}
+          iconProps={inCart ? { fill: "red", stroke: "none" } : {}}
+        />
+      )}
       <BackgroundImage
         src={project?.metadata?.image}
         fallbackSrc={project?.metadata?.image}

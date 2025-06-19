@@ -1,4 +1,5 @@
 import { PropsWithChildren, ReactNode } from "react";
+import { BackButton } from "./back-button";
 
 export function Page({
   actions,
@@ -16,7 +17,10 @@ export function Page({
     <>
       <div className="mb-2 flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <div>
-          <h1 className="text-xl font-bold tracking-tight">{title}</h1>
+          <div className="flex items-center gap-1">
+            {backLink && <BackButton href={backLink} />}
+            <h1 className="text-xl font-bold tracking-tight">{title}</h1>
+          </div>
           {description && (
             <p className="text-muted-foreground py-2">{description}</p>
           )}

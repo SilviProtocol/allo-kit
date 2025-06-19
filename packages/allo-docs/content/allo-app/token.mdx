@@ -1,9 +1,307 @@
-# Token
+# Token Components
 
-TODO
+Token components provide essential utilities for working with ERC20 tokens in AlloKit applications. These components handle common token operations like checking balances, managing allowances, and displaying amounts.
+
+## Components
 
 ### AllowanceCheck
 
+The `AllowanceCheck` component wraps other components and ensures the user has approved sufficient token allowance before allowing them to proceed with an operation.
+
+```tsx
+import { AllowanceCheck } from "~/components/token/allowance-check";
+
+export function DonateButton() {
+  const donationAmount = parseUnits("100", 6); // 100 USDC
+  
+  return (
+    <AllowanceCheck
+      amount={donationAmount}
+      tokenAddress="0xA0b86a33E6441e6c7eaE3C0C2D7E31"
+      spenderAddress="0x123..." // Pool contract address
+    >
+      <Button onClick={donate}>
+        Donate 100 USDC
+      </Button>
+    </AllowanceCheck>
+  );
+}
+```
+
+**How it works:**
+1. Checks current allowance for the token/spender combination
+2. If allowance is insufficient, renders an "Approve" button
+3. If balance is insufficient, shows "Insufficient balance" (disabled)
+4. If allowance and balance are sufficient, renders the wrapped children
+
+**Props:**
+- `children: ReactNode` - Component to render when allowance is sufficient
+- `amount?: bigint | number` - Required allowance amount (default: 0)
+- `tokenAddress: Address` - ERC20 token contract address
+- `spenderAddress: Address` - Contract that needs spending approval
+
 ### BalanceCheck
 
+The `BalanceCheck` component ensures the user has sufficient native token (ETH) balance before allowing transaction execution.
+
+```tsx
+import { BalanceCheck } from "~/components/token/balance-check";
+import { parseEther } from "viem";
+
+export function CreatePoolButton() {
+  const gasEstimate = parseEther("0.01"); // Estimated gas cost
+  
+  return (
+    <BalanceCheck amount={gasEstimate}>
+      <Button onClick={createPool}>
+        Create Pool
+      </Button>
+    </BalanceCheck>
+  );
+}
+```
+
+**How it works:**
+1. Checks the connected wallet's native token balance
+2. If balance is insufficient, shows "Insufficient balance" (disabled)
+3. If balance is sufficient, renders the wrapped children
+4. Shows loading state while balance is being fetched
+
+**Props:**
+- `children: ReactNode` - Component to render when balance is sufficient
+- `amount?: bigint` - Required native token amount (default: 0)
+
 ### TokenAmount
+
+The `TokenAmount` component formats and displays token amounts with proper decimals and symbols.
+
+```tsx
+import { TokenAmount } from "~/components/token/token-amount";
+
+export function ProjectCard({ project }) {
+  return (
+    <div>
+      <h3>{project.title}</h3>
+      <p>
+        Raised: <TokenAmount 
+          amount={project.totalReceived} 
+          token={project.token} 
+        />
+      </p>
+      <p>
+        Goal: <TokenAmount 
+          amount={project.fundingGoal} 
+          token={project.token}
+          hideSymbol={true}
+        /> USDC
+      </p>
+    </div>
+  );
+}
+```
+
+**Features:**
+- Automatically fetches token metadata (symbol, decimals)
+- Formats amounts using proper decimal places
+- Handles both number and bigint inputs
+- Option to hide token symbol
+
+**Props:**
+- `amount: number | bigint` - Token amount to display
+- `token: Address` - Token contract address
+- `hideSymbol?: boolean` - Hide token symbol (default: false)
+
+### TokenSymbol
+
+Displays just the token symbol for a given token address.
+
+```tsx
+import { TokenSymbol } from "~/components/token/token-amount";
+
+export function AllocationSummary({ allocations }) {
+  const tokenAddress = allocations[0].token;
+  
+  return (
+    <div>
+      <h3>Allocations in <TokenSymbol token={tokenAddress} /></h3>
+      {/* allocation list */}
+    </div>
+  );
+}
+```
+
+**Props:**
+- `token: Address` - Token contract address
+
+## Hooks
+
+### useToken
+
+The `useToken` hook fetches token information including metadata and balances.
+
+```tsx
+import { useToken } from "~/components/token/use-token";
+
+export function TokenInfo({ tokenAddress, accountAddress }) {
+  const { data: token, isPending, error } = useToken(tokenAddress, accountAddress);
+  
+  if (isPending) return <div>Loading token info...</div>;
+  if (error) return <div>Error loading token</div>;
+  
+  return (
+    <div>
+      <h3>{token.symbol}</h3>
+      <p>Decimals: {token.decimals}</p>
+      <p>Balance: {formatUnits(token.balance, token.decimals)}</p>
+    </div>
+  );
+}
+```
+
+**Returns:**
+```typescript
+{
+  symbol: string;     // Token symbol (e.g., "USDC")
+  decimals: number;   // Token decimals (e.g., 6)
+  balance: bigint;    // Account balance (if account provided)
+}
+```
+
+### useAllowance
+
+Checks the current allowance for a token/owner/spender combination.
+
+```tsx
+import { useAllowance } from "~/components/token/use-token";
+
+export function AllowanceDisplay() {
+  const { address } = useAccount();
+  const { data: allowance } = useAllowance(
+    tokenAddress,
+    address,        // owner
+    poolAddress     // spender
+  );
+  
+  return (
+    <div>
+      Current allowance: {formatUnits(allowance, 6)} USDC
+    </div>
+  );
+}
+```
+
+### useApprove
+
+Hook for approving token spending allowances.
+
+```tsx
+import { useApprove } from "~/components/token/use-token";
+
+export function ApproveButton() {
+  const approve = useApprove(tokenAddress, spenderAddress);
+  const amount = parseUnits("1000", 6); // 1000 USDC
+  
+  return (
+    <Button 
+      onClick={() => approve.writeContractAsync(amount)}
+      isLoading={approve.isPending}
+    >
+      Approve 1000 USDC
+    </Button>
+  );
+}
+```
+
+## Utility Functions
+
+### formatTokenAmount
+
+Utility function for formatting token amounts outside of React components.
+
+```tsx
+import { formatTokenAmount } from "~/components/token/token-amount";
+
+// Format a token amount with specific decimals
+const formatted = formatTokenAmount(amount, decimals);
+console.log(formatted); // "1,234.56"
+```
+
+## Common Patterns
+
+### Combining Token Components
+
+Token components work well together for complex UX flows:
+
+```tsx
+export function DonationFlow() {
+  const donationAmount = parseUnits("50", 6);
+  
+  return (
+    <div className="space-y-4">
+      <div>
+        Donating: <TokenAmount amount={donationAmount} token={usdcAddress} />
+      </div>
+      
+      <BalanceCheck amount={parseEther("0.01")}>
+        <AllowanceCheck
+          amount={donationAmount}
+          tokenAddress={usdcAddress}
+          spenderAddress={poolAddress}
+        >
+          <Button onClick={donate}>
+            Complete Donation
+          </Button>
+        </AllowanceCheck>
+      </BalanceCheck>
+    </div>
+  );
+}
+```
+
+### Token Selection
+
+For forms where users select tokens:
+
+```tsx
+export function TokenSelector({ tokens, onSelect }) {
+  return (
+    <Select onValueChange={onSelect}>
+      {tokens.map(token => (
+        <SelectItem key={token.address} value={token.address}>
+          <div className="flex items-center gap-2">
+            <TokenSymbol token={token.address} />
+            <span>
+              Balance: <TokenAmount 
+                amount={token.balance} 
+                token={token.address} 
+                hideSymbol={true}
+              />
+            </span>
+          </div>
+        </SelectItem>
+      ))}
+    </Select>
+  );
+}
+```
+
+### Loading States
+
+Handle loading states gracefully:
+
+```tsx
+export function TokenBalance({ tokenAddress }) {
+  const { address } = useAccount();
+  const { data: token, isPending } = useToken(tokenAddress, address);
+  
+  if (isPending) {
+    return <Skeleton className="h-4 w-20" />;
+  }
+  
+  if (!token) {
+    return <span className="text-muted-foreground">Unknown token</span>;
+  }
+  
+  return <TokenAmount amount={token.balance} token={tokenAddress} />;
+}
+```

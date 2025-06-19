@@ -10,98 +10,475 @@ import {
   ShieldCheck,
   Check,
   CircleDollarSign,
+  Settings,
+  Vote,
+  Users,
 } from "lucide-react";
 
 # Components
 
-TODO: Create more detailed documentation with screenshots for each component.
+AlloKit provides a comprehensive set of React components for building grant pool applications. These components are organized by functionality and provide consistent UI patterns across the platform.
 
-## Large building blocks
+## Core Components
 
-### Registration
+### Pool Components
 
-Registration components are used for anything that are related to projects and applications.
+Pool components handle pool creation, management, and display.
 
-- **Project** - A Project profile
-- **Application** - A Project application for a round or bounty for example
+<Cards>
+  <Cards.Card
+    icon={<BookText />}
+    title="PoolForm"
+    href="#poolform"
+  />
+  <Cards.Card
+    icon={<LayoutGrid />}
+    title="PoolCard"
+    href="#poolcard"
+  />
+  <Cards.Card
+    icon={<Rows3 />}
+    title="PoolList"
+    href="#poollist"
+  />
+  <Cards.Card
+    icon={<Settings />}
+    title="PoolDashboard"
+    href="#pooldashboard"
+  />
+</Cards>
+
+### Registration Components
+
+Registration components manage project registration and application workflows.
 
 <Cards>
   <Cards.Card
     icon={<BookText />}
     title="RegistrationForm"
-    href="/contracts/pool#registrationform"
+    href="#registrationform"
   />
   <Cards.Card
     icon={<Rows3 />}
     title="ApplicationsList"
-    href="/contracts/pool#applicationslist"
+    href="#applicationslist"
   />
   <Cards.Card
     icon={<LayoutGrid />}
-    title="ProjectsGrid"
-    href="/contracts/pool#projectslist"
+    title="RegistrationsList"
+    href="#registrationslist"
   />
   <Cards.Card
     icon={<Check />}
     title="ApproveButton"
-    href="/contracts/pool#approvebutton"
+    href="#approvebutton"
   />
 </Cards>
 
-### Allocation
+### Allocation Components
 
-Allocation components are used for anything related to transferring tokens to or from the connected account, projects, and the Strategy contract.
-
-- **Allocation** - Transfers from sender to an address.
-- **Distribution** - Transfers from Strategy to an address.
+Allocation components handle token transfers and distribution.
 
 <Cards>
   <Cards.Card
-    icon={<BookText />}
+    icon={<ShoppingBasket />}
     title="AllocationForm"
-    href="/contracts/pool#allocationform"
+    href="#allocationform"
   />
   <Cards.Card
     icon={<TableProperties />}
     title="AllocationsTable"
-    href="/contracts/pool#allocationstable"
+    href="#allocationstable"
+  />
+  <Cards.Card
+    icon={<Vote />}
+    title="DistributeButton"
+    href="#distributebutton"
+  />
+  <Cards.Card
+    icon={<CircleDollarSign />}
+    title="MatchingFunds"
+    href="#matchingfunds"
   />
 </Cards>
 
-### Token
+### Token Components
 
-These components are utility for working with ERC20 tokens.
-
-- **AllowanceCheck** and **BalanceCheck** are components to wrap other components like buttons where you want to perform on-chain transactions and need to check if the account has enough balance.
-
-- **TokenAmount** simply parses and renders an amount with correct decimals and the token symbol.
+Token components provide utilities for working with ERC20 tokens.
 
 <Cards>
   <Cards.Card
     icon={<ShieldCheck />}
     title="AllowanceCheck"
-    href="/allo-app/token#allocancecheck"
+    href="#allowancecheck"
   />
   <Cards.Card
     icon={<CircleCheck />}
     title="BalanceCheck"
-    href="/allo-app/token#balancecheck"
+    href="#balancecheck"
   />
   <Cards.Card
     icon={<CircleDollarSign />}
     title="TokenAmount"
-    href="/allo-app/token#tokenamount"
+    href="#tokenamount"
   />
 </Cards>
 
-## Smaller building blocks
+## Component Documentation
 
-- BackgrundImage
-- ConnectButton
-- EmptyState
-- EnsName
-- ErrorMessage
-- Grid
-- ImageUpload
-- Page
-- NetworkSelector
+### PoolForm
+
+Creates a new grant pool with configuration options.
+
+**Props:**
+- `strategies: Strategy[]` - Available pool strategies
+- `tokens: Token[]` - Available tokens for allocation/distribution
+- `defaultValues?: Partial<PoolSchema>` - Pre-populated form values
+- `onSuccess?: (pool: string) => void` - Callback when pool is created
+
+**Usage:**
+```tsx
+import { PoolForm } from "~/components/pool/pool-form";
+
+export default function CreatePoolPage() {
+  const strategies = [
+    { id: "quadratic-funding", name: "Quadratic Funding" },
+    { id: "direct-grants", name: "Direct Grants" }
+  ];
+  
+  const tokens = [
+    { symbol: "ETH", address: "0x...", decimals: 18 },
+    { symbol: "USDC", address: "0x...", decimals: 6 }
+  ];
+
+  return (
+    <PoolForm
+      strategies={strategies}
+      tokens={tokens}
+      onSuccess={(poolAddress) => 
+        router.push(`/pools/${poolAddress}`)
+      }
+    />
+  );
+}
+```
+
+### PoolCard
+
+Displays pool information in a card format with image, title, description, and matching funds.
+
+**Props:**
+- `...pool: Pool` - Pool data spread as props
+- `isLoading?: boolean` - Show loading state
+
+**Usage:**
+```tsx
+import { PoolCard } from "~/components/pool/pool-card";
+
+export default function PoolsPage() {
+  const { data: pools } = usePools();
+  
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {pools?.items.map(pool => (
+        <PoolCard key={pool.address} {...pool} />
+      ))}
+    </div>
+  );
+}
+```
+
+### PoolDashboard
+
+Administrative dashboard for pool owners to manage their pools.
+
+**Features:**
+- Pool configuration
+- Application review
+- Fund management
+- Distribution controls
+
+### RegistrationForm
+
+Form for projects to register or apply to pools.
+
+**Props:**
+- `poolAddress: Address` - Pool to register with
+- `defaultValues?: Partial<RegistrationSchema>` - Pre-populated values
+- `onSuccess?: (value: { project: string }) => void` - Success callback
+
+**Usage:**
+```tsx
+import { RegistrationForm } from "~/components/registration/registration-form";
+
+export default function RegisterPage() {
+  const { poolAddress } = useParams();
+  
+  return (
+    <RegistrationForm
+      poolAddress={poolAddress}
+      onSuccess={({ project }) => 
+        router.push(`/projects/${project}`)
+      }
+    />
+  );
+}
+```
+
+### ApplicationsList
+
+Displays pending applications with approve/reject functionality.
+
+**Props:**
+- `query: IndexerQuery` - GraphQL query for filtering applications
+
+**Usage:**
+```tsx
+import { ApplicationsList } from "~/components/registration/applications-list";
+
+export default function AdminPage() {
+  return (
+    <ApplicationsList
+      query={{
+        where: {
+          pool_in: [poolAddress],
+          status: "pending"
+        }
+      }}
+    />
+  );
+}
+```
+
+### RegistrationsList
+
+Shows registered projects in a grid layout.
+
+**Props:**
+- `query: IndexerQuery` - GraphQL query for filtering registrations
+
+### ApproveButton
+
+Button component for approving/rejecting project applications.
+
+**Props:**
+- `registrationId: string` - ID of registration to review
+- `onSuccess?: () => void` - Success callback
+
+### AllocationForm
+
+Form for allocating tokens to projects (uses shopping cart).
+
+**Usage:**
+```tsx
+import { AllocationForm } from "~/components/allocation/allocation-form";
+
+export default function CheckoutPage() {
+  return <AllocationForm />;
+}
+```
+
+**Features:**
+- Shopping cart integration
+- Batch allocations
+- Token allowance checking
+- Balance validation
+
+### AllocationsTable
+
+Table displaying token allocation history.
+
+**Props:**
+- `query: IndexerQuery` - GraphQL query for filtering allocations
+
+**Usage:**
+```tsx
+import { AllocationsTable } from "~/components/allocation/allocations-table";
+
+export default function ProjectPage() {
+  const { projectAddress } = useParams();
+  
+  return (
+    <AllocationsTable
+      query={{
+        where: {
+          to: projectAddress
+        }
+      }}
+    />
+  );
+}
+```
+
+### DistributeButton
+
+Button for pool owners to distribute matching funds.
+
+**Features:**
+- Admin-only access
+- Distribution calculations
+- Batch distributions
+
+### MatchingFunds
+
+Component showing matching fund pool status and management.
+
+**Features:**
+- Current matching fund balance
+- Add/withdraw matching funds
+- Distribution history
+
+### AllowanceCheck
+
+Wrapper component that checks and requests token allowances before executing operations.
+
+**Props:**
+- `children: ReactNode` - Component to render when allowance is sufficient
+- `amount?: bigint | number` - Required allowance amount
+- `tokenAddress: Address` - Token contract address
+- `spenderAddress: Address` - Contract that needs allowance
+
+**Usage:**
+```tsx
+import { AllowanceCheck } from "~/components/token/allowance-check";
+
+export function DonateButton() {
+  return (
+    <AllowanceCheck
+      amount={donationAmount}
+      tokenAddress={tokenAddress}
+      spenderAddress={poolAddress}
+    >
+      <Button onClick={donate}>
+        Donate {amount} USDC
+      </Button>
+    </AllowanceCheck>
+  );
+}
+```
+
+### BalanceCheck
+
+Wrapper component that checks native token (ETH) balance before executing transactions.
+
+**Props:**
+- `children: ReactNode` - Component to render when balance is sufficient
+- `amount?: bigint` - Required native token amount
+
+**Usage:**
+```tsx
+import { BalanceCheck } from "~/components/token/balance-check";
+
+export function TransactionButton() {
+  return (
+    <BalanceCheck amount={parseEther("0.01")}>
+      <Button onClick={executeTransaction}>
+        Execute Transaction
+      </Button>
+    </BalanceCheck>
+  );
+}
+```
+
+### TokenAmount
+
+Formats and displays token amounts with proper decimals and symbol.
+
+**Props:**
+- `amount: number | bigint` - Token amount to display
+- `token: Address` - Token contract address
+- `hideSymbol?: boolean` - Hide token symbol
+
+**Usage:**
+```tsx
+import { TokenAmount } from "~/components/token/token-amount";
+
+export function BalanceDisplay() {
+  return (
+    <div>
+      Balance: <TokenAmount amount={balance} token={tokenAddress} />
+    </div>
+  );
+}
+```
+
+## Utility Components
+
+### Grid
+
+Generic grid component for displaying lists of items with loading and error states.
+
+**Props:**
+- `data: T[]` - Array of items to display
+- `renderItem: (item: T) => ReactNode` - Function to render each item
+- `columns?: number[]` - Responsive column configuration
+- `isPending?: boolean` - Show loading state
+- `error?: Error` - Display error state
+
+### EmptyState
+
+Component for displaying empty states with optional call-to-action.
+
+### ErrorMessage
+
+Component for displaying error messages with consistent styling.
+
+### ImageUpload
+
+File upload component with drag-and-drop support and IPFS integration.
+
+### NetworkSelector
+
+Component for switching between different blockchain networks.
+
+### BackgroundImage
+
+Image component with fallback support and optimized loading.
+
+### ConnectButton
+
+Wallet connection button with network and account display.
+
+## Hooks
+
+### useCart
+
+Shopping cart functionality for managing selected projects.
+
+```tsx
+const cart = useCart();
+cart.add(projectAddress, poolAddress); // Add to cart
+cart.remove(projectAddress, poolAddress); // Remove from cart
+cart.clear(); // Clear cart
+```
+
+### useToken
+
+Hook for fetching token information and balances.
+
+```tsx
+const { data: token } = useToken(tokenAddress, accountAddress);
+// Returns: { symbol, decimals, balance }
+```
+
+### useAllocate
+
+Hook for allocating tokens to projects.
+
+```tsx
+const allocate = useAllocate();
+allocate.mutate({
+  recipients: [projectAddress],
+  amounts: [amount],
+  token: tokenAddress
+});
+```
+
+### useRegister
+
+Hook for registering projects with pools.
+
+```tsx
+const register = useRegister(poolAddress);
+register.mutate([projectAddress, metadataUri, data]);
+```

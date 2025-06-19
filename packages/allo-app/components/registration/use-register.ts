@@ -24,6 +24,19 @@ export function useRegister(poolAddress: Address) {
   });
 }
 
+export function useUpdateRegistration(poolAddress: Address) {
+  const sdk = useAlloKitSDK();
+  return useMutation({
+    mutationFn: async (args: [Address, string, Hex]) => {
+      const [project, metadataURI, data] = args;
+      return sdk?.update(poolAddress, project, metadataURI, data);
+    },
+    onSuccess: () => toast.success("Updated!"),
+    onError: (error) =>
+      toast.error(extractErrorReason(String(error)) ?? "Update error"),
+  });
+}
+
 // Approve Project or Application
 // calls Registry.review
 export function useRegistryReview(poolAddress: Address) {
@@ -52,12 +65,18 @@ export function useRegistrations(variables: IndexerQuery) {
 export function useRegistration({
   address,
   poolAddress,
+  owner,
 }: {
   address: Address;
   poolAddress: Address;
+  owner?: Address;
 }) {
   const { data, ...rest } = useRegistrations({
-    where: { address, pool_in: [poolAddress] },
+    where: {
+      address,
+      pool_in: [poolAddress],
+      owner_in: owner ? [owner] : undefined,
+    },
   });
   return { ...rest, data: data?.items?.[0] };
 }

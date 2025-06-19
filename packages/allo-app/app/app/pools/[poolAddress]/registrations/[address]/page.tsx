@@ -34,16 +34,16 @@ function AddToCartButton({ id }: { id: string }) {
 }
 
 function EditRegistrationButton({
-  id,
+  address,
   poolAddress,
 }: {
-  id: string;
+  address: string;
   poolAddress: Address;
 }) {
   return (
-    <Link href={`/app/pools/${poolAddress}/registrations/${id}/edit`}>
+    <Link href={`/app/pools/${poolAddress}/registrations/${address}/edit`}>
       <Button variant="outline" icon={Pencil}>
-        Edit Applications
+        Edit Application
       </Button>
     </Link>
   );
@@ -74,7 +74,7 @@ export default function RegistrationDetailsPage() {
           {account?.address?.toLowerCase() ===
             project?.owner?.toLowerCase() && (
             <EditRegistrationButton
-              id={project?.id!}
+              address={project?.address!}
               poolAddress={poolAddress}
             />
           )}

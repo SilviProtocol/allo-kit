@@ -10,7 +10,7 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 import {Pool, PoolConfig} from "../Pool.sol";
 
-contract RetroFunding is Pool, Context, AccessControl, ReentrancyGuard {
+contract QuadraticFunding is Pool, Context, AccessControl, ReentrancyGuard {
     constructor(string memory _name, string memory _schema, string memory _metadataURI) Pool(_name, _schema, _metadataURI) {}
 
     function initialize(PoolConfig memory _config, bytes memory data) public override {

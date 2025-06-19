@@ -14,6 +14,7 @@ import { ApprovedBadge } from "~/components/registration/approved-badge";
 import { useRegistration } from "~/components/registration/use-register";
 import { Pencil } from "lucide-react";
 import { useAccount } from "wagmi";
+import Link from "next/link";
 
 function AddToCartButton({ id }: { id: string }) {
   // TODO: Check if project is approved
@@ -32,15 +33,19 @@ function AddToCartButton({ id }: { id: string }) {
   );
 }
 
-function EditProjectButton({ id }: { id: string }) {
+function EditProjectButton({
+  id,
+  poolAddress,
+}: {
+  id: string;
+  poolAddress: Address;
+}) {
   return (
-    <Button
-      variant="outline"
-      icon={Pencil}
-      onClick={() => alert("not implemented")}
-    >
-      Edit Project
-    </Button>
+    <Link href={`/app/pools/${poolAddress}/registrations/${id}/edit`}>
+      <Button variant="outline" icon={Pencil}>
+        Edit Project
+      </Button>
+    </Link>
   );
 }
 
@@ -48,9 +53,10 @@ export default function RegistrationDetailsPage() {
   const params = useParams();
   const account = useAccount();
   const address = params.address as Address;
+  const poolAddress = params.poolAddress as Address;
   const { data: project } = useRegistration({
     address,
-    poolAddress: params.poolAddress as Address,
+    poolAddress,
   });
 
   return (
@@ -67,7 +73,7 @@ export default function RegistrationDetailsPage() {
           )}
           {account?.address?.toLowerCase() ===
             project?.owner?.toLowerCase() && (
-            <EditProjectButton id={project?.id!} />
+            <EditProjectButton id={project?.id!} poolAddress={poolAddress} />
           )}
         </>
       }

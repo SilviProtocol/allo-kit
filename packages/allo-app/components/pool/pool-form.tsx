@@ -292,7 +292,7 @@ export function PoolForm({
           createElement(
             strategyComponents[
               selectedStrategy.name as keyof typeof strategyComponents
-            ],
+            ] ?? "div",
             { tokens }
           )}
 

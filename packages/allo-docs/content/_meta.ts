@@ -2,6 +2,12 @@ export default {
   index: "",
   "get-started": "",
   architecture: "",
+  sdk: {
+    title: "SDK",
+    theme: {
+      collapsed: false,
+    },
+  },
   contracts: {
     title: "Strategy Contracts",
     theme: {

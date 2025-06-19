@@ -1,42 +1,418 @@
 # Pool
 
-The base contract to extend when creating strategies. At this point it only does two things:
+The base Pool contract provides core functionality for grant pools and can be extended to create specific allocation strategies. Key features include:
 
-- Emits an `Initialized` event when deployed. This is picked up by the indexer.
-- Contains a `strategyName` property.
+- **Pool Configuration**: Manages pool settings like owner, admins, tokens, and metadata
+- **Project Registration**: Handles project applications with pending/approved/rejected status
+- **Token Operations**: Supports both allocation (from sender) and distribution (from contract)
+- **Event Emission**: Emits standardized events for indexing
+
+## PoolConfig Structure
 
 ```solidity
+struct PoolConfig {
+    address owner;
+    address[] admins;
+    address allocationToken;  // Token used for donations/allocations
+    address distributionToken; // Token used for matching funds/distributions  
+    uint256 maxAmount;        // Maximum pool funding (0 = no limit)
+    uint64[] timestamps;      // Important dates (registration, allocation, distribution)
+    string metadataURI;       // Pool metadata (title, description, etc.)
+}
+```
 
+## Registration Status
+
+```solidity
+enum Status {
+    pending,   // Initial state when project registers
+    approved,  // Project approved by admin
+    rejected   // Project rejected by admin
+}
+
+struct Registration {
+    Status status;
+    address owner;         // Who registered the project
+    string metadataURI;    // Project metadata
+    bytes data;           // Custom data for strategy-specific info
+}
+```
+
+## Core Interface
+
+```solidity
 interface IPool {
-
-    event Deployed(string name, address indexed owner, string schema, PoolConfig config);
+    // Events
+    event Deployed(string name, address indexed owner, string schema, string metadataURI);
     event Allocate(address indexed from, address indexed to, uint256 amount, address token, bytes data);
     event Register(address indexed project, address indexed owner, string metadataURI, bytes data);
     event Review(address indexed project, uint8 status, address indexed approver, string metadataURI, bytes data);
     event Update(address indexed project, address indexed updater, string metadataURI, bytes data);
     event Configure(address indexed updater, PoolConfig config);
 
+    // Core functions
     function initialize(PoolConfig memory config, bytes memory data) external;
-    function _configure(address updater, PoolConfig memory config) external;
-    function _register(address project, string memory metadataURI, bytes memory data) external;
-    function _update(address project, string memory metadataURI, bytes memory data) external;
-    function _review(address project, uint8 status, string memory metadataURI, bytes memory data) external;
-    function _allocate(
-        address[] memory recipients,
-        uint256[] memory amounts,
-        address token,
-        bytes[] memory data
-    ) external;
-    function _distribute(
-        address[] memory recipients,
-        uint256[] memory amounts,
-        address token,
-        bytes[] memory data
-    ) external;
+    function configure(PoolConfig memory config) external;
+    function register(address project, string memory metadataURI, bytes memory data) external;
+    function update(address project, string memory metadataURI, bytes memory data) external;
+    function review(address project, uint8 status, string memory metadataURI, bytes memory data) external;
+    function allocate(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data) external;
+    function distribute(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data) external;
 }
 ```
 
-**Indexer GraphQL Query**
+## Key Functions
+
+### Allocate vs Distribute
+
+- **`allocate()`**: Transfers tokens from the caller to recipients (used for donations, funding pools)
+- **`distribute()`**: Transfers tokens from the contract to recipients (used for distributing matching funds)
+
+### Hooks for Custom Logic
+
+Strategies can override these internal functions to add custom validation:
+
+- **`_beforeAllocate()`**: Called before each allocation
+- **`_beforeDistribute()`**: Called before each distribution
+
+## Registration System
+
+The Pool contract includes a built-in registration system for managing project eligibility. This replaces the need for separate Registry extensions.
+
+### Registration Process
+
+1. **Registration**: Projects call `register()` with metadata
+2. **Review**: Admins call `review()` to approve/reject applications  
+3. **Status Tracking**: Registrations have pending/approved/rejected status
+
+### Registration Events
+
+```solidity
+event Register(address indexed project, address indexed owner, string metadataURI, bytes data);
+event Review(address indexed project, uint8 status, address indexed approver, string metadataURI, bytes data);
+event Update(address indexed project, address indexed updater, string metadataURI, bytes data);
+```
+
+### Registration Structure
+
+The Pool tracks registrations per project address:
+
+```solidity
+mapping(address => Registration) public registrations;
+
+struct Registration {
+    Status status;         // pending, approved, or rejected
+    address owner;         // Who registered the project
+    string metadataURI;    // Project metadata (title, description, etc.)
+    bytes data;           // Custom data for strategy-specific info
+}
+```
+
+## Token Operations (Allocation & Distribution)
+
+The Pool contract provides two types of token operations:
+
+### Allocate vs Distribute
+
+- **`allocate()`**: Transfers tokens **from the caller** to recipients (donations, funding pools)
+- **`distribute()`**: Transfers tokens **from the contract** to recipients (distributing matching funds)
+
+### Token Transfer Events
+
+```solidity
+event Allocate(address indexed from, address indexed to, uint256 amount, address token, bytes data);
+```
+
+Both allocation and distribution operations emit the same `Allocate` event, with `from` indicating the source:
+- Allocation: `from` = caller address
+- Distribution: `from` = contract address
+
+### Batch Operations
+
+Both functions support batch operations to efficiently transfer to multiple recipients:
+
+```solidity
+function allocate(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data) external;
+function distribute(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data) external;
+```
+
+### Custom Validation
+
+Strategies can override validation hooks to enforce business logic:
+
+```solidity
+function _beforeAllocate(address recipient, uint256 amount, address token, bytes memory data) internal virtual {
+    // Example: Only approved projects can receive allocations
+    require(registrations[recipient].status == Status.approved, "Recipient must be approved");
+}
+
+function _beforeDistribute(address recipient, uint256 amount, address token, bytes memory data) internal virtual {
+    // Example: Check contract has sufficient balance
+    uint256 balance = IERC20(token).balanceOf(address(this));
+    require(amount <= balance, "Amount exceeds balance");
+}
+```
+
+## Frontend Integration
+
+### GraphQL Queries
+
+The indexer provides GraphQL endpoints for both registrations and allocations:
+
+#### Registrations Query
+
+```graphql
+{
+  registrations(where: { strategy_in: ["0xYourPoolAddress"] }) {
+    items {
+      id
+      address        # Project address
+      owner         # Who registered
+      metadata      # Fetched metadataURI content
+      review        # Review metadata (if approved/rejected)
+      isApproved    # Boolean status
+      status        # "pending", "approved", "rejected"
+      createdAt
+      updatedAt
+      
+      # Token transfers to this project
+      allocations {
+        items {
+          from
+          to
+          amount
+          amountInUSD
+          token
+        }
+      }
+    }
+  }
+}
+```
+
+#### Allocations Query
+
+```graphql
+{
+  allocations(where: { strategy_in: ["0xYourPoolAddress"] }) {
+    items {
+      from
+      to
+      amount
+      amountInUSD    # Indexer fetches token price
+      token          # { address, symbol, decimals }
+      data
+      createdAt
+      
+      registration {
+        address
+        metadata
+        isApproved
+      }
+    }
+  }
+}
+```
+
+### React Hooks
+
+#### Registration Hooks
+
+```tsx
+import { useRegistrations, useRegister, useReview } from "~/hooks/use-indexer";
+
+export function RegistrationExample() {
+  const { YourPool } = useContracts();
+  
+  // List all projects (initial registrations)
+  const projects = useRegistrations({
+    where: {
+      strategy_in: [YourPool?.address],
+      // Add any additional filters
+    },
+  });
+  
+  // Register new project
+  const register = useRegister({ strategyAddress: YourPool?.address });
+  
+  // Review applications (admin only)
+  const review = useReview({ strategyAddress: YourPool?.address });
+  
+  return (
+    <div>
+      {projects.data?.items.map(project => (
+        <div key={project.address}>
+          <h3>{project.metadata?.title}</h3>
+          <p>Status: {project.status}</p>
+          {project.status === 'pending' && (
+            <button onClick={() => review.mutate({
+              project: project.address,
+              status: 1, // approved
+              metadataURI: '',
+              data: '0x'
+            })}>
+              Approve
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+#### Allocation Hooks
+
+```tsx
+import { useAllocations, useAllocate } from "~/hooks/use-indexer";
+
+export function AllocationExample() {
+  const { YourPool } = useContracts();
+  
+  // Get donations (from users to projects)
+  const donations = useAllocations({
+    where: {
+      strategy_in: [YourPool?.address],
+      from_not_in: [YourPool?.address], // Exclude distributions from pool
+    },
+  });
+  
+  // Get distributions (from pool to projects)
+  const distributions = useAllocations({
+    where: {
+      strategy_in: [YourPool?.address],
+      from_in: [YourPool?.address], // Only distributions from pool
+    },
+  });
+  
+  // Allocate tokens
+  const allocate = useAllocate({ strategyAddress: YourPool?.address });
+  
+  return (
+    <div>
+      <h3>Recent Donations</h3>
+      {donations.data?.items.map(allocation => (
+        <div key={allocation.id}>
+          {allocation.amount} {allocation.token.symbol} to {allocation.to}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Components
+
+#### RegistrationForm
+
+Register projects or submit applications:
+
+```tsx
+import { RegistrationForm } from "~/components/registration/registration-form";
+
+export default function RegisterPage() {
+  const router = useRouter();
+  const { YourPool } = useContracts();
+
+  return (
+    <RegistrationForm
+      strategyAddress={YourPool?.address}
+      onSuccess={({ project }) => router.push(`/project/${project}`)}
+    />
+  );
+}
+```
+
+#### ApplicationsList
+
+Show pending applications with approve/reject buttons:
+
+```tsx
+import { ApplicationsList } from "~/components/registration/applications-list";
+
+export default function AdminPage() {
+  const { YourPool } = useContracts();
+  
+  return (
+    <ApplicationsList
+      query={{
+        where: {
+          strategy_in: [YourPool?.address],
+          isApproved: false,
+        },
+      }}
+    />
+  );
+}
+```
+
+#### ProjectsList
+
+Display approved projects in a grid:
+
+```tsx
+import { ProjectsList } from "~/components/registration/projects-list";
+
+export default function ProjectsPage() {
+  const { YourPool } = useContracts();
+  
+  return (
+    <ProjectsList
+      query={{
+        where: {
+          strategy_in: [YourPool?.address],
+          isApproved: true,
+        },
+      }}
+    />
+  );
+}
+```
+
+#### AllocationForm
+
+Allocate tokens to projects in cart:
+
+```tsx
+import { AllocationForm } from "~/components/allocation/allocation-form";
+
+export default function CheckoutPage() {
+  const { YourPool, ERC20Mock } = useContracts();
+
+  return (
+    <AllocationForm
+      strategyAddress={YourPool?.address}
+      tokenAddress={ERC20Mock?.address}
+    />
+  );
+}
+```
+
+#### AllocationsTable
+
+Display token transfers in a table:
+
+```tsx
+import { AllocationsTable } from "~/components/allocation/allocations-table";
+
+export default function ProjectDetailsPage() {
+  const { project } = useParams();
+  const { YourPool } = useContracts();
+  
+  return (
+    <AllocationsTable
+      query={{
+        where: {
+          strategy_in: [YourPool?.address],
+          to: project,
+        },
+      }}
+    />
+  );
+}
+```
+
+**Legacy GraphQL Query (from original Pool docs)**
 
 ```graphql
 {

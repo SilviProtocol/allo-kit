@@ -1,0 +1,77 @@
+# AlloKit SDK
+
+The AlloKit SDK is a TypeScript/JavaScript library that provides a simple interface for interacting with AlloKit smart contracts. It handles all the low-level blockchain interactions, making it easy to integrate grant pools, allocations, and distributions into your applications.
+
+## Features
+
+- **Pool Management**: Deploy and configure grant pools
+- **Project Registration**: Register projects and manage applications
+- **Review System**: Approve or reject project applications
+- **Allocation & Distribution**: Manage fund allocation and distribution
+- **Type Safety**: Full TypeScript support with generated types
+- **Multi-Chain**: Support for multiple EVM-compatible chains
+
+## Core Concepts
+
+### Pool Lifecycle
+
+1. **Deploy**: Create a new grant pool with specific configuration
+2. **Configure**: Update pool settings and parameters
+3. **Register**: Projects apply to join the pool
+4. **Review**: Pool admins approve or reject applications
+5. **Allocate**: Determine funding amounts for approved projects  
+6. **Distribute**: Transfer funds to recipients
+
+### Key Components
+
+- **Pool**: The main smart contract that manages grants
+- **PoolFactory**: Factory contract for deploying new pools
+- **Strategy**: Pluggable allocation strategies (e.g., quadratic funding)
+- **Metadata**: Off-chain data stored on IPFS for pools and projects
+
+## Quick Example
+
+```tsx
+import { AlloKitSDK } from "@allo-kit/sdk";
+import { createWalletClient, http } from "viem";
+
+// Initialize the SDK
+const client = createWalletClient({
+  transport: http(),
+  // ... wallet configuration
+});
+
+const sdk = new AlloKitSDK(client, 1); // mainnet
+
+// Deploy a new pool
+const { pool } = await sdk.deployPool(ownerAddress, {
+  owner: ownerAddress,
+  admins: [adminAddress],
+  allocationToken: tokenAddress,
+  distributionToken: tokenAddress,
+  maxAmount: parseUnits("10000", 18),
+  timestamps: [startTime, endTime],
+  metadataURI: "ipfs://...",
+});
+
+// Register a project
+await sdk.register(pool, projectAddress, "ipfs://project-metadata");
+
+// Approve the project
+await sdk.review(pool, projectAddress, 2, "ipfs://review-metadata");
+
+// Allocate funds
+await sdk.allocate(
+  pool,
+  [projectAddress],
+  [parseUnits("1000", 18)],
+  tokenAddress
+);
+```
+
+## Next Steps
+
+- [Installation](/sdk/installation) - Install and set up the SDK
+- [Quick Start Guide](/sdk/quick-start) - Build your first integration
+- [API Reference](/sdk/api) - Complete method documentation
+- [Examples](/sdk/examples) - Real-world usage examples

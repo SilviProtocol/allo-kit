@@ -13,11 +13,12 @@ modifier onlyToken(account, token, amount)
 ##### Example
 
 ```solidity
-contract GatedRegistryWithMerkleClaim is Allocator, Registry, TokenGate, MerkleClaim {
+contract GatedPoolWithMerkleClaim is Pool, TokenGate, MerkleClaim {
     address private alloToken;
     address private guildNFT;
 
-    constructor(address _alloToken, address _guildNFT) {
+    constructor(address _alloToken, address _guildNFT, string memory _name, string memory _schema, string memory _metadataURI) 
+        Pool(_name, _schema, _metadataURI) {
         alloToken = _alloToken;
         guildNFT = _guildNFT;
     }
@@ -31,13 +32,14 @@ contract GatedRegistryWithMerkleClaim is Allocator, Registry, TokenGate, MerkleC
         _register(project, metadataURI, data);
     }
 
-    // Only holders of 10 ALLO tokens can approve projects
-    function approve(
+    // Only holders of 10 ALLO tokens can review projects
+    function review(
         address project,
+        uint8 status,
         string memory metadataURI, // Metadata contains Application Review
         bytes memory data
     ) public override onlyToken(msg.sender, alloToken, 10 ** 18) {
-        _approve(project, metadataURI, data);
+        _review(project, status, metadataURI, data);
     }
 
     // Only Owner can update Merkle
@@ -65,14 +67,20 @@ modifier onlyEAS(account, schemaUID, attester)
 ```
 
 ```solidity
-contract OptimismRetroFunding is Allocator, EASGate, Registry {
-  // Only OP Badgeholders can call
-  function allocate() public overide onlyEAS(msg.sender, badgeholderSchemaUID, approvedAttester) {
-    _allocate(recipient, token, amount);
+contract OptimismRetroFunding is Pool, EASGate {
+  constructor(string memory _name, string memory _schema, string memory _metadataURI) 
+      Pool(_name, _schema, _metadataURI) {}
+
+  // Only OP Badgeholders can allocate
+  function allocate(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data) 
+      public override onlyEAS(msg.sender, badgeholderSchemaUID, approvedAttester) {
+    _allocate(recipients, amounts, token, data);
   }
 
-  function register(address project) onlyEAS(project, approvedSchemaUID, approvedAttester) {
-    _register(recipient, metadataURI);
+  // Only approved projects can register
+  function register(address project, string memory metadataURI, bytes memory data) 
+      public override onlyEAS(project, approvedSchemaUID, approvedAttester) {
+    _register(project, metadataURI, data);
   }
 }
 ```

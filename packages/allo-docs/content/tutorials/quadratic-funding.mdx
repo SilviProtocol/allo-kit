@@ -20,72 +20,97 @@ It will have the following features:
 
 ## Smart contract
 
-### Create the Contract File
+### Understanding the Contract Structure
 
-Create a new file at `packages/hardhat/contracts/QuandraticFunding.sol`.
+The QuadraticFunding strategy is located at `packages/hardhat/contracts/strategies/QuadraticFunding.sol` and extends the base Pool contract.
 
-### Donation and Matching Tokens
+### Key Features
 
-We want to allow donations of a specific token to be allocated to projects.
-We will then use these donations to calculate a quadratic funding amount for each project to be awarded from the matching pool.
+The QuadraticFunding contract provides:
 
-As described in the [Allocator](/contracts/allocator) documentation:
-
-- **Allocate** - tokens going from sender to a recipient. We will use this for donations and funding the matching pool.
-- **Distribute** - tokens going from strategy contract to a recipient. This is for distributing the matching funds to projects.
+- **Access Control**: Uses OpenZeppelin's AccessControl for admin management
+- **Token Validation**: Ensures allocations use the correct tokens (allocation vs distribution)
+- **Registration Management**: Projects can register and be reviewed by admins
+- **Allocation Control**: Validates recipients are approved before allocation
+- **Distribution Control**: Only admins can distribute funds from the pool
 
 ```solidity
-//SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0 <0.9.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {Pool, PoolConfig} from "../Pool.sol";
 
-import { Allocator } from "../extensions/Allocator.sol";
-import { Registry, IRegistry } from "../extensions/Registry.sol";
-import { Strategy } from "../base/Strategy.sol";
+contract QuadraticFunding is Pool, Context, AccessControl, ReentrancyGuard {
+    constructor(string memory _name, string memory _schema, string memory _metadataURI) 
+        Pool(_name, _schema, _metadataURI) {}
 
-contract QuadraticFunding is Strategy, Allocator, Registry, Ownable {
-    address public immutable donationToken;
-    address public immutable matchingToken;
-
-    constructor(
-        address owner,
-        address _donationToken,
-        address _matchingToken
-    ) Ownable(owner) Strategy("QuadraticFunding") {
-        donationToken = _donationToken;
-        matchingToken = _matchingToken;
+    function initialize(PoolConfig memory _config, bytes memory data) public override {
+        super.initialize(_config, data);
+        _grantRole(DEFAULT_ADMIN_ROLE, _config.owner);
+        for (uint256 i = 0; i < _config.admins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, _config.admins[i]);
+        }
     }
 
-    // Register is inherited from the Registry contract so we don't need to override it
-
-    // Owner can approve projects
-    function approve(
-        address project,
-        uint256 index,
-        string memory metadataURI,
-        bytes memory data
-    ) public override onlyOwner {
-        super.approve(project, index, metadataURI, data);
+    // Configure pool (admin only)
+    function configure(PoolConfig memory _config) public override onlyRole(DEFAULT_ADMIN_ROLE) {
+        super._configure(_config);
+        _grantRole(DEFAULT_ADMIN_ROLE, _config.owner);
+        for (uint256 i = 0; i < _config.admins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, _config.admins[i]);
+        }
     }
 
-    // Override allocate function to check if tokens are either donation or matching
-    function _allocate(address to, uint256 amount, address token, bytes memory data) internal override nonReentrant {
-        if (to == address(this)) require(token == matchingToken, "Matching funds to strategy must be matching token");
-        if (to != address(this)) require(token == donationToken, "Allocations to projects must be donation token");
-
-        super._allocate(to, amount, token, data);
+    // Anyone can register a project
+    function register(address project, string memory _metadataURI, bytes memory data) external override {
+        _register(project, _metadataURI, data);
     }
 
-    // Distribution of matching funds to projects (must be by owner)
-    function distribute(
-        address[] memory recipients,
-        uint256[] memory amounts,
-        address token,
-        bytes[] memory data
-    ) public override onlyOwner {
-        require(token == matchingToken, "Must be matching token");
-        super.distribute(recipients, amounts, token, data);
+    // Only admins can review applications
+    function review(address project, uint8 status, string memory _metadataURI, bytes memory data)
+        external override onlyRole(DEFAULT_ADMIN_ROLE) {
+        _review(project, status, _metadataURI, data);
+    }
+
+    // Allocate with token validation and reentrancy protection
+    function allocate(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
+        external override nonReentrant {
+        require(
+            token == config.allocationToken || token == config.distributionToken,
+            "Allocations to projects must be allocation or distribution token"
+        );
+        _allocate(recipients, amounts, token, data);
+    }
+
+    // Only admins can distribute funds from the pool
+    function distribute(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
+        external override onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
+        require(token == config.distributionToken, "Distributions must be distribution token");
+        _distribute(recipients, amounts, token, data);
+    }
+
+    // Validation before allocation
+    function _beforeAllocate(address recipient, uint256 amount, address token, bytes memory data) internal override {
+        require(
+            recipient == address(this) || registrations[recipient].status == Status.approved,
+            "Recipient is not approved"
+        );
+        if (recipient == address(this)) {
+            uint256 balance = IERC20(token).balanceOf(address(this));
+            require(config.maxAmount == 0 || amount + balance <= config.maxAmount, "Max amount reached");
+        }
+    }
+
+    // Validation before distribution
+    function _beforeDistribute(address recipient, uint256 amount, address token, bytes memory data) internal override {
+        uint256 balance = IERC20(token).balanceOf(address(this));
+        require(amount <= balance, "Amount exceeds balance");
+        require(registrations[recipient].status == Status.approved, "Recipient is not approved");
     }
 }
 ```

@@ -2,7 +2,7 @@ import { Callout } from "nextra/components";
 
 # Direct Grants
 
-In this tutorial, we’ll create a Direct Grants strategy that allows an admin to grant funds to a list of recipients. The main features are:
+In this tutorial, we'll create a Direct Grants strategy that allows an admin to grant funds to a list of recipients. The main features are:
 
 - **Project Registration**: Grantees register their projects.
 - **Application Listing**: Admins list the submitted project applications.
@@ -30,98 +30,93 @@ Read more about the rationale behind this in the [Strategy Contracts](/contracts
 
 ## Smart contract
 
-### Create the Contract File
+### Understanding the Contract Structure
 
-Create a new file at `packages/hardhat/contracts/DirectGrants.sol`.
+A DirectGrants strategy would extend the base Pool contract. While not included in the current codebase, here's how you would create one following the same patterns as QuadraticFunding.
 
-### Allocate Tokens
+### Creating a DirectGrants Contract
 
-AlloKit includes an [Allocator](/contracts/allocator) extension contract that handles transferring tokens and emitting events for indexing.
-
-By using the same interface for `allocate` across all strategies, AlloKit ensures that this custom data is indexed in a consistent manner—no matter what strategy you’re using.
+Create a new file at `packages/hardhat/contracts/strategies/DirectGrants.sol` following the Pool-based architecture:
 
 ```solidity
-//SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0 <0.9.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { Strategy } from "./base/Strategy.sol";
-import { Allocator } from "./extensions/Allocator.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {Pool, PoolConfig} from "../Pool.sol";
 
-contract DirectGrants is Strategy, Allocator, Ownable {
-  constructor(address owner) Ownable(owner) Strategy("DirectGrants") {}
+contract DirectGrants is Pool, Context, AccessControl, ReentrancyGuard {
+    constructor(string memory _name, string memory _schema, string memory _metadataURI)
+        Pool(_name, _schema, _metadataURI) {}
 
-  function allocate(
-    address[] memory recipients,
-    uint256[] memory amounts,
-    address token,
-    bytes[] memory data
-    // Only the owner can give out grants (optional - we can also allow anyone to donate)
-  ) public override onlyOwner {
-    // Use the default implementation from Allocator
-    super.allocate(recipients, amounts, token, data);
-  }
+    function initialize(PoolConfig memory _config, bytes memory data) public override {
+        super.initialize(_config, data);
+        _grantRole(DEFAULT_ADMIN_ROLE, _config.owner);
+        for (uint256 i = 0; i < _config.admins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, _config.admins[i]);
+        }
+    }
+
+    // Configure pool (admin only)
+    function configure(PoolConfig memory _config) public override onlyRole(DEFAULT_ADMIN_ROLE) {
+        super._configure(_config);
+    }
+
+    // Anyone can register a project
+    function register(address project, string memory _metadataURI, bytes memory data) external override {
+        _register(project, _metadataURI, data);
+    }
+
+    // Only admins can review applications
+    function review(address project, uint8 status, string memory _metadataURI, bytes memory data)
+        external override onlyRole(DEFAULT_ADMIN_ROLE) {
+        _review(project, status, _metadataURI, data);
+    }
+
+    // Only admins can allocate grants
+    function allocate(address[] memory recipients, uint256[] memory amounts, address token, bytes[] memory data)
+        external override onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
+        require(token == config.allocationToken, "Must use allocation token");
+        _allocate(recipients, amounts, token, data);
+    }
+
+    // Validation: only approved projects can receive grants
+    function _beforeAllocate(address recipient, uint256 amount, address token, bytes memory data) internal override {
+        require(registrations[recipient].status == Status.approved, "Recipient must be approved");
+    }
 }
 ```
 
-### Register projects
+### Key Differences from QuadraticFunding
 
-We also need a way to list projects we want to give out grants to. There are many ways to do this, we could use [EAS](https://docs.attest.sh) Attestations similar to what Optimism is doing with RetroFunding.
-However, to do that we would need to set up the EAS SDK, create schemas, and write functions to create attestations.
+1. **Admin-Only Allocation**: Only admins can allocate grants (vs. open donations in QF)
+2. **Simpler Logic**: Straightforward approval -> allocation workflow
 
-For now, we will just use the AlloKit [Registry](/contracts/registry) to register projects.
-The Registry extension provides functions to register and approve projects. When we extend this contract we get access to calling `register` and `approve` functions. If we wish to make any changes we can simply override them.
+### Pool Configuration
 
-We explore using EAS as a Registry in the [RetroFunding](/tutorials/retro-funding) tutorial.
+The DirectGrants strategy uses the PoolConfig structure:
 
 ```solidity
-import { Registry } from "./extensions/Registry.sol";
-
-// Add the Registry extension to the contract
-contract DirectGrants is Strategy, Allocator, Registry, Ownable {
-  // This override is optional since we're not changing any logic.
-  function register(
-    address project,
-    string memory metadataURI,
-    bytes memory data
-  ) public override {
-    super.register(project, metadataURI, data);
-  }
-  function approve(
-    address project,
-    uint256 index,
-    string memory metadataURI,
-    bytes memory data
-    // Only the owner can approve projects
-  ) public override onlyOwner {
-    super.approve(project, index, metadataURI, data);
-  }
-
-  // Same as before
+struct PoolConfig {
+    address owner;            // Pool owner
+    address[] admins;         // Additional admins who can review/allocate
+    address allocationToken;  // Token used for grant allocations
+    address distributionToken; // Token used for distributions (often same as allocation)
+    uint256 maxAmount;        // Maximum pool funding (0 = no limit)
+    uint64[] timestamps;      // Important dates
+    string metadataURI;       // Pool metadata
 }
 ```
 
-**Enforcing Approved Projects Only**
+### Registration and Review Process
 
-We can also add a check to make sure only approved projects can receive grants. The easiest way to do this is to override the internal `_allocate` function.
-
-```solidity
-import { Registry, IRegistry } from "./extensions/Registry.sol";
-
-contract DirectGrants is Strategy, Allocator, Registry, Ownable {
-  // Same as before
-
-  function _allocate(
-    address to,
-    uint256 amount,
-    address token,
-    bytes memory data
-  ) internal override {
-    require(projects[to][0].status == IRegistry.Status.approved, "Project not approved");
-    super._allocate(to, amount, token, data);
-  }
-}
-```
+1. **Registration**: Projects call `register()` with their metadata
+2. **Review**: Admins call `review()` to approve/reject applications
+3. **Allocation**: Admins can allocate grants to approved projects
+4. **Distribution**: Pool can distribute funds directly to recipients
 
 ### Deploying the contract
 
@@ -130,7 +125,11 @@ Open the deploy script at `packages/hardhat/deploy/00_deploy_your_contract.ts` a
 ```ts
 await deploy("DirectGrants", {
   from: deployer,
-  args: ["0xYourAdminAddress"], // Replace with your wallet address
+  args: [
+    "DirectGrants", // Pool name
+    "()", // Schema (empty for basic usage)
+    "ipfs://metadata-uri", // Pool metadata URI
+  ],
   log: true,
   autoMine: true,
 });
@@ -255,6 +254,7 @@ export default function CheckoutPage() {
 
 After completing the basics, consider the following improvements:
 
-- **Access Control**: Replace the Ownable pattern with [AccessControl](https://docs.openzeppelin.com/contracts/5.x/api/access#AccessControl) to allow more granular permissions on who can approve projects and allocate funds.
+- **Access Control**: The current implementation uses AccessControl for granular permissions on who can approve projects and allocate funds.
 - **Admin-Only Views**: Limit the `ApplicationsPage` so that only admins can view the applications.
-- **EAS Registry**: While this tutorial uses the simple AlloKit Registry for project registration, you might explore using EAS Attestations _(or check out the [RetroFunding](/tutorials/retro-funding) tutorial)_.
+- **Pool Factory**: Use the PoolFactory to deploy new DirectGrants instances dynamically.
+- **Advanced Features**: Add features like milestones, reporting requirements, or multi-sig approvals.

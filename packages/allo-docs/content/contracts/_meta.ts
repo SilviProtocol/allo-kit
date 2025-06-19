@@ -3,8 +3,7 @@ export default {
     type: "doc",
     title: "Overview",
   },
-  registry: "Registry",
-  allocator: "Allocator",
+  pool: "Pool",
   merkle: "Merkle Claim",
   gates: "Gates",
 };

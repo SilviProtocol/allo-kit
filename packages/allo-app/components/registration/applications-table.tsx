@@ -99,6 +99,7 @@ export function ApplicationsTable({
       data={data?.items ?? []}
       pagination={{ pageSize: 20 }}
       renderFilter={(table) => {
+        return null;
         return (
           <div className="flex justify-between gap-2">
             <Input

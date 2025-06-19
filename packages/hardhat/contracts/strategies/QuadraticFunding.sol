@@ -21,6 +21,15 @@ contract QuadraticFunding is Pool, Context, AccessControl, ReentrancyGuard {
         }
     }
 
+
+    function configure(PoolConfig memory _config) public override   onlyRole(DEFAULT_ADMIN_ROLE) {
+        super._configure(_config);
+        _grantRole(DEFAULT_ADMIN_ROLE, _config.owner);
+        for (uint256 i = 0; i < _config.admins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, _config.admins[i]);
+        }
+    }
+
     // MetadataURI contain details about project application
     function register(address project, string memory _metadataURI, bytes memory data) external override {
         _register(project, _metadataURI, data);

@@ -6,7 +6,7 @@ import { baseSepolia, hardhat } from "viem/chains";
 const isDev = process.env.NODE_ENV === "development";
 
 const targetNetwork = isDev ? hardhat : baseSepolia;
-const START_BLOCK = isDev ? 0 : 26638593;
+const START_BLOCK = isDev ? 0 : 27281190;
 
 const networks = {
   [targetNetwork.name]: {

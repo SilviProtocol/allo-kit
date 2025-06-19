@@ -42,6 +42,7 @@ export class AlloKitSDK {
     config: PoolConfig,
     data: Hex = "0x"
   ): Promise<{ pool: Address }> {
+    console.log("deploying pool", address, data);
     return this.#executeTransaction({
       abi: this.#poolFactory.abi,
       address: this.#poolFactory.address,
@@ -57,7 +58,7 @@ export class AlloKitSDK {
     metadataURI: string,
     data: Hex = "0x"
   ): Promise<void> {
-    await this.#executeTransaction({
+    return this.#executeTransaction({
       abi: this.#pool.abi,
       address: pool,
       functionName: "register",
@@ -73,7 +74,7 @@ export class AlloKitSDK {
     metadataURI: string,
     data: Hex = "0x"
   ): Promise<void> {
-    await this.#executeTransaction({
+    return this.#executeTransaction({
       abi: this.#pool.abi,
       address: pool,
       functionName: "review",
@@ -88,7 +89,7 @@ export class AlloKitSDK {
     metadataURI: string,
     data: Hex = "0x"
   ): Promise<void> {
-    await this.#executeTransaction({
+    return this.#executeTransaction({
       abi: this.#pool.abi,
       address: pool,
       functionName: "update",
@@ -104,7 +105,7 @@ export class AlloKitSDK {
     token: Address,
     data: Hex[] = []
   ): Promise<void> {
-    await this.#executeTransaction({
+    return this.#executeTransaction({
       abi: this.#pool.abi,
       address: pool,
       functionName: "allocate",
@@ -120,7 +121,7 @@ export class AlloKitSDK {
     token: Address,
     data: Hex[] = []
   ): Promise<void> {
-    await this.#executeTransaction({
+    return this.#executeTransaction({
       abi: this.#pool.abi,
       address: pool,
       functionName: "distribute",

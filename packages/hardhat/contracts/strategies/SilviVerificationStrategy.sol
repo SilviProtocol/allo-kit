@@ -14,8 +14,8 @@ import {IEAS} from "@ethereum-attestation-service/eas-contracts/contracts/IEAS.s
 
 
 contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGuard {
-    uint256 private amountDeployed = 0;
-    uint256 private amountDistributed = 0;
+    uint256 private totalFunded = 0;
+    uint256 private totalDistributed = 0;
 
     IEAS public eas;
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -29,6 +29,7 @@ contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGu
             eas = IEAS(easAddress);
         }
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());   // Grant the deployer the default admin role
+        _grantRole(ADMIN_ROLE, _msgSender());   // Also grant the deployer the admin role
     }
 
 
@@ -74,7 +75,7 @@ contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGu
 
         allocate([address(this)], [amount], config.distributionToken, new bytes[](1));
 
-        amountDeployed += amount;
+        totalFunded += amount;
     }
 
     /// @notice Transfers tokens from the contract to recipients.
@@ -91,7 +92,7 @@ contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGu
         _distribute(recipients, amounts, config.distributionToken, data);
 
         for (uint256 i = 0; i < recipients.length; i++) {
-            amountDistributed += amounts[i];
+            totalDistributed += amounts[i];
         }
     }
 
@@ -116,12 +117,13 @@ contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGu
 
     /// @notice Sends the contract's balance back to the owner.
     /// @dev This function can only be called by the contract owner.
-    function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
+    function liquidate() external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
         require(config.distributionToken != address(0), "Token (distribution token) not set");
         uint256 balance = IERC20(config.distributionToken).balanceOf(address(this));
-        require(balance > 0, "No balance to withdraw");
 
-        SafeERC20.safeTransfer(IERC20(config.distributionToken), _msgSender(), balance);
+        if (balance > 0) {
+            SafeERC20.safeTransfer(IERC20(config.distributionToken), _msgSender(), balance);
+        }
     }
 
 
@@ -129,13 +131,13 @@ contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGu
     /// ========== Data Access ========
     /// ===============================
 
-    /// @notice Returns the total amount of tokens deployed in the pool.
-    function getAmountDeployed() external view returns (uint256) {
-        return amountDeployed;
+    /// @notice Returns the total amount of tokens funded in the pool.
+    function getTotalFunded() external view returns (uint256) {
+        return totalFunded;
     }
 
     /// @notice Returns the total amount of tokens distributed from the pool.
-    function getAmountDistributed() external view returns (uint256) {
-        return amountDistributed;
+    function getTotalDistributed() external view returns (uint256) {
+        return totalDistributed;
     }
 }

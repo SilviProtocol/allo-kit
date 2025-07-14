@@ -73,7 +73,17 @@ contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGu
         require(amount > 0, "Amount must be greater than zero");
         require(config.distributionToken != address(0), "Token (distribution token) not set");
 
-        allocate([address(this)], [amount], config.distributionToken, new bytes[](1));
+        // Create proper arrays for _allocate
+        address[] memory recipients = new address[](1);
+        recipients[0] = address(this);
+        
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = amount;
+        
+        bytes[] memory data = new bytes[](1);
+        data[0] = "";
+
+        _allocate(recipients, amounts, config.distributionToken, data);
 
         totalFunded += amount;
     }
@@ -85,7 +95,6 @@ contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGu
     /// @param data Additional data that can be used during distribution, such as attestation UIDs.
     function distribute(address[] memory recipients, uint256[] memory amounts, bytes[] memory data)
         external
-        override
         onlyRole(ADMIN_ROLE)
         nonReentrant
     {

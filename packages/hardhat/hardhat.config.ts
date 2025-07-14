@@ -23,6 +23,8 @@ const deployerPrivateKey =
 const etherscanApiKey = process.env.ETHERSCAN_MAINNET_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
 const etherscanOptimisticApiKey = process.env.ETHERSCAN_OPTIMISTIC_API_KEY || "RM62RDISS1RH448ZY379NX625ASG1N633R";
 const basescanApiKey = process.env.BASESCAN_API_KEY || "ZZZEIPMT1MNJ8526VV2Y744CA7TNZR64G6";
+const arbiscanApiKey = process.env.ARBISCAN_API_KEY || "YourArbiscanApiKeyHere";
+const celoscanApiKey = process.env.CELOSCAN_API_KEY || "YourCeloscanApiKeyHere";
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -66,10 +68,22 @@ const config: HardhatUserConfig = {
     arbitrum: {
       url: `https://arb-mainnet.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
+      verify: {
+        etherscan: {
+          apiUrl: "https://api.arbiscan.io",
+          apiKey: arbiscanApiKey,
+        },
+      },
     },
     arbitrumSepolia: {
       url: `https://arb-sepolia.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
+      verify: {
+        etherscan: {
+          apiUrl: "https://api-sepolia.arbiscan.io",
+          apiKey: arbiscanApiKey,
+        },
+      },
     },
     optimism: {
       url: `https://opt-mainnet.g.alchemy.com/v2/${providerApiKey}`,
@@ -151,27 +165,73 @@ const config: HardhatUserConfig = {
       url: "https://sepolia.publicgoods.network",
       accounts: [deployerPrivateKey],
     },
+    // Celo Networks
     celo: {
       url: "https://forno.celo.org",
       accounts: [deployerPrivateKey],
+      verify: {
+        etherscan: {
+          apiUrl: "https://api.celoscan.io",
+          apiKey: celoscanApiKey,
+        },
+      },
     },
     celoAlfajores: {
       url: "https://alfajores-forno.celo-testnet.org",
       accounts: [deployerPrivateKey],
+      verify: {
+        etherscan: {
+          apiUrl: "https://api-alfajores.celoscan.io",
+          apiKey: celoscanApiKey,
+        },
+      },
     },
   },
   // configuration for harhdat-verify plugin
   etherscan: {
-    apiKey: `${etherscanApiKey}`,
+    apiKey: {
+      mainnet: etherscanApiKey,
+      sepolia: etherscanApiKey,
+      arbitrumOne: arbiscanApiKey,
+      arbitrumSepolia: arbiscanApiKey,
+      optimisticEthereum: etherscanOptimisticApiKey,
+      optimisticSepolia: etherscanOptimisticApiKey,
+      base: basescanApiKey,
+      baseSepolia: basescanApiKey,
+      celo: celoscanApiKey,
+      celoAlfajores: celoscanApiKey,
+    },
+    customChains: [
+      {
+        network: "celo",
+        chainId: 42220,
+        urls: {
+          apiURL: "https://api.celoscan.io/api",
+          browserURL: "https://celoscan.io"
+        }
+      },
+      {
+        network: "celoAlfajores",
+        chainId: 44787,
+        urls: {
+          apiURL: "https://api-alfajores.celoscan.io/api",
+          browserURL: "https://alfajores.celoscan.io"
+        }
+      }
+    ]
   },
   // configuration for etherscan-verify from hardhat-deploy plugin
   verify: {
     etherscan: {
-      apiKey: `${etherscanApiKey}`,
+      apiKey: etherscanApiKey,
     },
   },
   sourcify: {
     enabled: false,
+  },
+  gasReporter: {
+    enabled: process.env.REPORT_GAS !== undefined,
+    currency: "USD",
   },
 };
 

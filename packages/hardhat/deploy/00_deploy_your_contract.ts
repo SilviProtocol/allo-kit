@@ -1,104 +1,80 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
-import { Contract } from "ethers";
 
-/**
- * Deploys a contract named "YourContract" using the deployer account and
- * constructor arguments set to the deployer address
- *
- * @param hre HardhatRuntimeEnvironment object.
- */
-const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  /*
-    On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
-
-    When deploying to live networks (e.g `yarn deploy --network sepolia`), the deployer account
-    should have sufficient balance to pay for the gas fees for contract creation.
-
-    You can generate a random account with `yarn generate` or `yarn account:import` to import your
-    existing PK which will fill DEPLOYER_PRIVATE_KEY_ENCRYPTED in the .env file (then used on hardhat.config.ts)
-    You can run the `yarn account` command to check your balance in every network.
-  */
+const deployPoolContracts: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
+  
+  console.log(`Deploying to network: ${hre.network.name}`);
+  console.log(`Deployer address: ${deployer}`);
 
-  await deploy("PoolFactory", {
+  // Deploy PoolFactory
+  console.log("\n📦 Deploying PoolFactory...");
+  const poolFactory = await deploy("PoolFactory", {
     from: deployer,
-    // Contract constructor arguments
-    args: [],
-    log: true,
-    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-    // automatically mining the contract deployment transaction. There is no effect on live networks.
-    autoMine: true,
-  });
-
-  await deploy("ERC20Mock", {
-    from: deployer,
-    // Contract constructor arguments
     args: [],
     log: true,
     autoMine: true,
   });
 
-  const owner = deployer; // Add your owner address here
+  // Network-specific EAS contract addresses
+  const easAddresses: Record<string, string> = {
+    // Arbitrum networks
+    arbitrum: "0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458",
+    arbitrumSepolia: "0x4200000000000000000000000000000000000021",
+    
+    // Celo networks
+    celo: "0x72E1d8ccf5299fb36fEfD8CC4394B8ef7e98Af92",
+    celoAlfajores: "0x0000000000000000000000000000000000000000", // Update if you have testnet address
+    
+    // Fallback
+    default: "0x0000000000000000000000000000000000000000"
+  };
 
-  await deploy("Pool", {
+  const easAddress = easAddresses[hre.network.name] || easAddresses.default;
+  
+  console.log(`\n🔐 Using EAS address: ${easAddress} for network: ${hre.network.name}`);
+  
+  // Show EAS status
+  if (easAddress === "0x0000000000000000000000000000000000000000") {
+    console.log("⚠️  No EAS deployment available on this network");
+  } else {
+    console.log("✅ EAS integration enabled");
+  }
+
+  // Deploy SilviVerificationStrategy
+  console.log("\n📦 Deploying SilviVerificationStrategy...");
+  const silviStrategy = await deploy("SilviVerificationStrategy", {
     from: deployer,
-    // Contract constructor arguments
     args: [
+      "Silvi Verification Strategy",
+      "address recipient, uint256 amount, bytes32 claimAttestationUID, bytes32 goalAttestationUID",
       "",
-      "",
-      {
-        owner,
-        allocationToken: "0x0000000000000000000000000000000000000000",
-        distributionToken: "0x0000000000000000000000000000000000000000",
-        maxAmount: 0n,
-        metadataURI: "",
-        admins: [],
-        timestamps: [],
-      },
+      easAddress
     ],
     log: true,
-    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-    // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
   });
 
-  await deploy("QuadraticFunding", {
-    from: deployer,
-    // Contract constructor arguments
-    args: ["QuadraticFunding", "uint256 amount", ""],
-    log: true,
-    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-    // automatically mining the contract deployment transaction. There is no effect on live networks.
-    autoMine: true,
-  });
-
-  // await deploy("QuadraticFunding", {
-  //   from: deployer,
-  //   // Contract constructor arguments
-  //   args: [
-  //     "QuadraticFunding",
-  //     "uint256 amount",
-  //     {
-  //       owner,
-  //       allocationToken: "0x0000000000000000000000000000000000000000",
-  //       distributionToken: "0x0000000000000000000000000000000000000000",
-  //       maxAmount: 0n,
-  //       metadataURI: "",
-  //       admins: [],
-  //       timestamps: [],
-  //     },
-  //   ],
-  //   log: true,
-  //   // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-  //   // automatically mining the contract deployment transaction. There is no effect on live networks.
-  //   autoMine: true,
-  // });
+  console.log(`\n📋 Deployment Summary:`);
+  console.log(`=====================`);
+  console.log(`Network: ${hre.network.name}`);
+  console.log(`PoolFactory: ${poolFactory.address}`);
+  console.log(`SilviVerificationStrategy: ${silviStrategy.address}`);
+  console.log(`EAS Address: ${easAddress}`);
+  console.log(`EAS Integration: ${easAddress !== "0x0000000000000000000000000000000000000000" ? "✅ Enabled" : "❌ Disabled"}`);
+  
+  // Additional network-specific info
+  if (hre.network.name === "celo") {
+    console.log(`\n🌟 Celo Mainnet Deployment Complete!`);
+    console.log(`- Full EAS functionality available`);
+    console.log(`- EAS Explorer: https://celo.easscan.org/`);
+  } else if (hre.network.name === "arbitrum") {
+    console.log(`\n🌟 Arbitrum Mainnet Deployment Complete!`);
+    console.log(`- Full EAS functionality available`);
+    console.log(`- EAS Explorer: https://arbitrum.easscan.org/`);
+  }
 };
 
-export default deployYourContract;
-
-// Tags are useful if you have multiple deploy files and only want to run one of them.
-// e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["SimpleGrants"];
+export default deployPoolContracts;
+deployPoolContracts.tags = ["PoolContracts"];

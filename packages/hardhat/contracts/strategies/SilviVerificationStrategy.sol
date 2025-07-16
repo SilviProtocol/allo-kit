@@ -20,18 +20,7 @@ contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGu
     IEAS public eas;
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-    /// @notice Constructor that initializes the pool with the provided name, schema, and metadata URI and grants the deployer the default admin role.
-    /// @param _name The name of the pool.
-    /// @param _schema The schema of the pool.
-    /// @param _metadataURI The metadata URI of the pool.
-    constructor(string memory _name, string memory _schema, string memory _metadataURI, address easAddress) Pool(_name, _schema, _metadataURI) {
-        if (easAddress != address(0)) {
-            eas = IEAS(easAddress);
-        }
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());   // Grant the deployer the default admin role
-        _grantRole(ADMIN_ROLE, _msgSender());   // Also grant the deployer the admin role
-    }
-
+    constructor(string memory _name, string memory _schema, string memory _metadataURI) Pool(_name, _schema, _metadataURI) {}
 
     /// ======================================
     /// ========== Permissioning =============
@@ -40,8 +29,19 @@ contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGu
     /// @notice Initializes the pool with the provided configuration and grants the admin role to the owner and admins specified in the config.
     /// @param _config The configuration for the pool.
     /// @param data Additional data that can be used during initialization.
-    function initialize(PoolConfig memory _config, bytes memory data) public override onlyRole(DEFAULT_ADMIN_ROLE) {
+    function initialize(PoolConfig memory _config, bytes memory data) public override {
         super.initialize(_config, data);
+
+        // Decode easAddress from data
+        if (data.length > 0) {
+            address easAddress = abi.decode(data, (address));
+            if (easAddress != address(0)) {
+                eas = IEAS(easAddress);
+            }
+        }
+
+        // Grant the default admin role to the owner
+        _grantRole(DEFAULT_ADMIN_ROLE, _config.owner);
 
         // Grant the admin role to the owner and admins specified in the config
         _grantRole(ADMIN_ROLE, _config.owner);
@@ -52,7 +52,7 @@ contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGu
 
     /// @notice Configures the pool with the provided configuration and grants the admin role to the owner and admins specified in the config.
     /// @param _config The configuration for the pool.
-    function configure(PoolConfig memory _config) public override onlyRole(ADMIN_ROLE) {
+    function configure(PoolConfig memory _config) public override onlyRole(DEFAULT_ADMIN_ROLE) {
         super._configure(_config);
 
         // Grant the admin role to the owner and admins specified in the config
@@ -132,6 +132,7 @@ contract SilviVerificationStrategy is Pool, Context, AccessControl, ReentrancyGu
 
         if (balance > 0) {
             SafeERC20.safeTransfer(IERC20(config.distributionToken), _msgSender(), balance);
+            totalFunded -= balance;
         }
     }
 

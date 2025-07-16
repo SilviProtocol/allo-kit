@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "./types";
 const deployedContracts = {
   42161: {
     PoolFactory: {
-      address: "0x8fBb44FB9991CdB9A42DC653561f9bcD238f2b25",
+      address: "0xe647b7Ec1841bf32a291Bf7392bcEc2A5Ab7A542",
       abi: [
         {
           inputs: [],
@@ -152,7 +152,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     SilviVerificationStrategy: {
-      address: "0x6F4113A48a0dB2A73F2E39D3ad7FA278CE2b3035",
+      address: "0x44fC8F1123A5A2B29BeEb40C77eEa6Aeed7D99b9",
       abi: [
         {
           inputs: [
@@ -170,11 +170,6 @@ const deployedContracts = {
               internalType: "string",
               name: "_metadataURI",
               type: "string",
-            },
-            {
-              internalType: "address",
-              name: "easAddress",
-              type: "address",
             },
           ],
           stateMutability: "nonpayable",
@@ -1105,7 +1100,7 @@ const deployedContracts = {
   },
   42220: {
     PoolFactory: {
-      address: "0x8A6E0B611d1c548186897552CFBF8AE290549Df3",
+      address: "0x4e51E761707d11012f51E99B266CD195cEBbFa04",
       abi: [
         {
           inputs: [],
@@ -1250,7 +1245,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     SilviVerificationStrategy: {
-      address: "0x5aa2f5A501b9939Ea69cfcdb1336eF4d56605688",
+      address: "0xeF4F2E36c03e4FD5c9caB1C1f6522AeB3Eb19c01",
       abi: [
         {
           inputs: [
@@ -1268,11 +1263,6 @@ const deployedContracts = {
               internalType: "string",
               name: "_metadataURI",
               type: "string",
-            },
-            {
-              internalType: "address",
-              name: "easAddress",
-              type: "address",
             },
           ],
           stateMutability: "nonpayable",
@@ -2203,7 +2193,7 @@ const deployedContracts = {
   },
   44787: {
     PoolFactory: {
-      address: "0x5aa2f5A501b9939Ea69cfcdb1336eF4d56605688",
+      address: "0x80856524a98E420E447D313CB4AC921Bc0136c70",
       abi: [
         {
           inputs: [],
@@ -2348,7 +2338,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     SilviVerificationStrategy: {
-      address: "0x4e51E761707d11012f51E99B266CD195cEBbFa04",
+      address: "0xeF4F2E36c03e4FD5c9caB1C1f6522AeB3Eb19c01",
       abi: [
         {
           inputs: [
@@ -2366,11 +2356,6 @@ const deployedContracts = {
               internalType: "string",
               name: "_metadataURI",
               type: "string",
-            },
-            {
-              internalType: "address",
-              name: "easAddress",
-              type: "address",
             },
           ],
           stateMutability: "nonpayable",
@@ -5978,7 +5963,7 @@ const deployedContracts = {
   },
   421614: {
     PoolFactory: {
-      address: "0x8A6E0B611d1c548186897552CFBF8AE290549Df3",
+      address: "0x89405FaEA0CD8C5893a7960F1226176fA46fdA41",
       abi: [
         {
           inputs: [],
@@ -6123,7 +6108,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     SilviVerificationStrategy: {
-      address: "0xF773Ab06ed986ceDBE5d4F8F79f1923A1260a06e",
+      address: "0xe5F5B46CaE8879e505eB9e820dB2aA07245496E3",
       abi: [
         {
           inputs: [
@@ -6141,11 +6126,6 @@ const deployedContracts = {
               internalType: "string",
               name: "_metadataURI",
               type: "string",
-            },
-            {
-              internalType: "address",
-              name: "easAddress",
-              type: "address",
             },
           ],
           stateMutability: "nonpayable",

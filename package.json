@@ -17,6 +17,10 @@
     "chain": "yarn hardhat:chain",
     "compile": "yarn hardhat:compile",
     "deploy": "yarn hardhat:deploy",
+    "deploy:celo": "yarn workspace @se-2/hardhat deploy:celo",
+    "deploy:celo-test": "yarn workspace @se-2/hardhat deploy:celo-test",
+    "deploy:arbitrum": "yarn workspace @se-2/hardhat deploy:arbitrum",
+    "deploy:arbitrum-test": "yarn workspace @se-2/hardhat deploy:arbitrum-test",
     "fork": "yarn hardhat:fork",
     "format": "yarn next:format && yarn hardhat:format",
     "generate": "yarn account:generate",
@@ -47,7 +51,8 @@
     "vercel": "yarn workspace @se-2/nextjs vercel",
     "vercel:login": "yarn workspace @se-2/nextjs vercel:login",
     "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo",
-    "verify": "yarn hardhat:verify"
+    "verify": "yarn hardhat:verify",
+    "verify-deployment": "yarn workspace @se-2/hardhat verify-deployment"
   },
   "devDependencies": {
     "husky": "~8.0.3",

@@ -9,10 +9,10 @@
     "check-types": "tsc --noEmit --incremental",
     "compile": "hardhat compile",
     "deploy": "ts-node scripts/runHardhatDeployWithPK.ts",
-    "deploy:celo": "npx hardhat deploy --network celo --tags PoolContracts",
-    "deploy:celo-test": "npx hardhat deploy --network celoAlfajores --tags PoolContracts",
-    "deploy:arbitrum": "npx hardhat deploy --network arbitrum --tags PoolContracts",
-    "deploy:arbitrum-test": "npx hardhat deploy --network arbitrumSepolia --tags PoolContracts",
+    "deploy:celo": "yarn hardhat deploy --network celo --tags PoolContracts",
+    "deploy:celo-test": "yarn hardhat deploy --network celoAlfajores --tags PoolContracts",
+    "deploy:arbitrum": "yarn hardhat deploy --network arbitrum --tags PoolContracts",
+    "deploy:arbitrum-test": "yarn hardhat deploy --network arbitrumSepolia --tags PoolContracts",
     "deploy:all": "./deploy-to-networks.sh",
     "flatten": "hardhat flatten",
     "fork": "MAINNET_FORKING_ENABLED=true hardhat node --network hardhat --no-deploy",
@@ -24,7 +24,8 @@
     "test": "REPORT_GAS=true hardhat test --network hardhat",
     "verify": "hardhat etherscan-verify",
     "verify:celo": "npx hardhat verify --network celo",
-    "verify:arbitrum": "npx hardhat verify --network arbitrum"
+    "verify:arbitrum": "npx hardhat verify --network arbitrum",
+    "verify-deployment": "hardhat run scripts/verify-deployment.ts"
   },
   "dependencies": {
     "@ethereum-attestation-service/eas-contracts": "^1.8.0",
